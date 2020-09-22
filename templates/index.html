@@ -1,0 +1,18 @@
+{% extends 'patterns/base.html' %}
+
+{% block title %} Welcome! {% endblock %}
+
+{% block style %}
+    <style>
+        body {
+            background-color: cornflowerblue;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    {% load static %}
+    <img src="{% static "img/sun.png" %}" alt="Солнышко" style="width: 20%; height: 20%">
+
+{% endblock %}
