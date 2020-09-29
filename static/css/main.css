@@ -191,6 +191,15 @@ footer {
     background: linear-gradient(to right top, #FADABE 50%, transparent 50%);
 }
 
-.text {
+.top_line {
+    min-height: 100px;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 1px rgb(0, 0, 0);
+    align-items: center;
+}
 
+.top_line button {
+    position: relative;
+    top: 15px;
+    align-content: center;
 }
