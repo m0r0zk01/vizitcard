@@ -1,36 +1,6 @@
-@import url(https://fonts.googleapis.com/css?family=Open+Sans);
-
-.nav-bar {
-  max-width: 960px;
-  mask-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #ffffff 25%, #ffffff 75%, rgba(255, 255, 255, 0) 100%);
-  margin: 0 auto;
-  padding: 30px 0;
-}
-
-.nav-bar ul {
-  text-align: center;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 25%, rgba(255, 255, 255, 0.2) 75%, rgba(255, 255, 255, 0) 100%);
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.1), inset 0 0 1px rgba(255, 255, 255, 0.6);
-}
-
-.nav-bar ul li {
-  display: inline-block;
-}
-
-.nav-bar ul li a {
-  padding: 18px;
-  font-family: "Open Sans";
-  color: #eeefea;
-  font-size: 20px;
-  text-decoration: none;
-  display: block;
-}
-
-.nav-bar ul li a:hover {
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1), inset 0 0 1px rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(0, 35, 122, 0.7);
-}
+@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap');
 
 form {
     display: flex;
@@ -49,7 +19,7 @@ form {
     height: 100px;
     font-size: 80px;
     line-height: 100px;
-    background: -webkit-linear-gradient(#27EF9F, #0DB8DE);
+    background: -webkit-linear-gradient(#27EF9F, #F2482C);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -71,7 +41,7 @@ form {
 input[readonly] {
     background-color: #1A2226 !important;
     border: none !important;
-    border-bottom: 2px solid #0DB8DE !important;
+    border-bottom: 2px solid #F2482C !important;
     border-top: 0px;
     border-radius: 0px;
     font-weight: bold;
@@ -84,7 +54,7 @@ input[readonly] {
 input[type=text] {
     background-color: #1A2226;
     border: none;
-    border-bottom: 2px solid #0DB8DE;
+    border-bottom: 2px solid #F2482C;
     border-top: 0px;
     border-radius: 0px;
     font-weight: bold;
@@ -97,7 +67,7 @@ input[type=text] {
 input[type=email] {
     background-color: #1A2226;
     border: none;
-    border-bottom: 2px solid #0DB8DE;
+    border-bottom: 2px solid #F2482C;
     border-top: 0px;
     border-radius: 0px;
     font-weight: bold;
@@ -110,7 +80,7 @@ input[type=email] {
 input[type=password] {
     background-color: #1A2226;
     border: none;
-    border-bottom: 2px solid #0DB8DE;
+    border-bottom: 2px solid #F2482C;
     border-top: 0px;
     border-radius: 0px;
     font-weight: bold;
@@ -126,16 +96,14 @@ input[type=password] {
 }
 
 .form-control:focus {
-    width: auto;
     border-color: inherit;
     -webkit-box-shadow: none;
     box-shadow: none;
-    border-bottom: 2px solid #0DB8DE;
+    border-bottom: 2px solid #F2482C;
     outline: 0;
     background-color: #1A2226;
     color: #ECF0F5;
 }
-
 input:focus {
     outline: none;
     box-shadow: 0 0 0;
@@ -153,8 +121,8 @@ label {
 }
 
 .btn-outline-primary {
-    border-color: #0DB8DE;
-    color: #0DB8DE;
+    border-color: #F2482C;
+    color: #F2482C;
     border-radius: 0px;
     font-weight: bold;
     letter-spacing: 1px;
@@ -162,8 +130,8 @@ label {
 }
 
 .btn-outline-primary:hover {
-    background-color: #0DB8DE;
-    border-color: #0DB8DE;
+    background-color: #F2482C;
+    border-color: #F2482C;
     right: 0px;
 }
 
@@ -185,4 +153,44 @@ label {
 
 .loginbttm {
     padding: 0px;
+}
+
+header {
+    height: 1100px;
+    font-family: 'Julius Sans One', sans-serif;
+    background:url("../img/bg.png") no-repeat center;
+    background-size: cover;
+    position: relative;
+}
+
+header h1 {
+    font-size: 80px;
+    color: whitesmoke;
+}
+
+footer {
+    margin-top: 100px;
+    background-color: rgba(0, 0, 0, .9);
+    position: relative;
+	bottom: 0;
+	width: 100%;
+	height: 150px;
+}
+
+.overlay {
+
+}
+
+.overlay:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 300px;
+    background: linear-gradient(to right top, #FADABE 50%, transparent 50%);
+}
+
+.text {
+
 }
