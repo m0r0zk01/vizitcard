@@ -1,0 +1,50 @@
+{% extends 'patterns/base.html' %}
+
+{% block title %} Welcome to vizitcard {% endblock %}
+
+{% block style %}
+    <style>
+        body {
+            background-color: #FADABE;
+        }
+        html, body {
+            min-height: 100% !important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+   <div class="container">
+        <div class="row">
+            <div class="text">
+                {% lorem 3 %}
+            </div>
+        </div>
+   </div>
+
+    {% include 'register.html' %}
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function swap_to_log() {
+            document.getElementById('swap_to_log').addEventListener('click', function foo () {
+                $('#reg_form').replaceWith(`{% include 'login.html' %}`);
+                swap_to_reg();
+            });
+        }
+        function swap_to_reg() {
+            document.getElementById('swap_to_reg').addEventListener('click', function foo () {
+                $('#log_form').replaceWith(`{% include 'register.html' %}`);
+                swap_to_log();
+            });
+        }
+
+        function kek() {
+            console.log(1);
+        }
+        swap_to_log();
+    </script>
+{% endblock %}
