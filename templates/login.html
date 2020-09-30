@@ -1,25 +1,19 @@
-<div id="reg_form" class="container" style="margin-top: 100px">
+<div id="log_form" class="container" style="margin-top: 100px">
     <div class="row">
         <div class="col-lg-3 col-md-2"></div>
         <div class="col-lg-6 col-md-8 login-box" style="box-shadow: 0 0 30px rgba(242, 72, 44, 0.75)">
             <div class="col-lg-12 login-title">
-                Регистрация!
+                Войти!
             </div>
-            <div class="login-text" style="margin-right: 10%; margin-left: 10%; margin-top:3%"> Введите существующую
-                почту, свой ник и придумайте пароль
+            <div class="login-text" style="margin-right: 10%; margin-left: 10%; margin-top:3%"> Введите свои данные
             </div>
             <div class="col-lg-12 login-form">
                 <div class="col-lg-12 login-form">
                     <form action="new_user" method="post">
                         {% csrf_token %}
                         <div class="form-group">
-                            <label class="form-control-label">НИКНЕЙМ</label>
+                            <label class="form-control-label">НИКНЕЙМ или EMAIL</label>
                             <input name="username" type="text" id="username" class="form-control">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-control-label">EMAIL</label>
-                            <input name="email" type="email" class="form-control" id="email">
                         </div>
 
                         <div class="form-group">
@@ -27,20 +21,15 @@
                             <input name="password" type="password" class="form-control" id="password">
                         </div>
 
-                         <div class="form-group">
-                            <label class="form-control-label">ПОДТВЕРДИТЕ ПАРОЛЬ</label>
-                            <input name="confirm_password" type="password" class="form-control" id="confirm_password">
-                        </div>
-
-                        <div style="margin-left: 30px;">
+                        <div style="display: inline-block; margin-left: 40px">
                             <div class="col-lg-12 loginbttm">
                                 <div class="col-lg-6 login-btm login-text"></div>
                                 <div class="col-lg-6 login-btm login-button">
-                                    <button class="btn btn-outline-primary" id="reg">Создать аккаунт</button>
+                                    <button class="btn btn-outline-primary" id="reg">Войти</button>
                                 </div>
                             </div>
                             <div style="color: #FADABE">
-                                <p>Уже есть аккаунт? <button class="text_button" id="swap_to_log" type="button"><u>Войти</u></button></p>
+                                Нет аккаунта? <button class="text_button" id="swap_to_reg" type="button"><u>Регистрация</u></button>
                             </div>
                         </div>
                     </form>

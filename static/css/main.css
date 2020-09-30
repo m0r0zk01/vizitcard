@@ -203,3 +203,13 @@ footer {
     top: 15px;
     align-content: center;
 }
+
+.text_button {
+    background:none;
+    color: #FADABE;
+    border:none;
+    margin:0;
+    padding:0;
+    cursor: pointer;
+    text-decoration: underline rgb(242, 72, 44);
+}
