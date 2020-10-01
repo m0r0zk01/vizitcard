@@ -20,11 +20,14 @@
     <title>{% block title %} {% endblock %}</title>
 </head>
 
+<style>
+    html, body {
+            min-height: 100% !important;
+    }
+</style>
 {% block style %} {% endblock %}
 
 <body>
-
-{% include 'patterns/header.html' %}
 
 {% block content %} {% endblock %}
 

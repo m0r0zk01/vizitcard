@@ -1,3 +1,11 @@
+{% extends 'patterns/base.html' %}
+
 YOU ARE LOGGED IN AS {{ user.username }}
 
 <a href="logout">LOGOUT</a>
+
+{% block content %}
+
+{% include 'patterns/sidebar.html' %}
+
+{% endblock %}
