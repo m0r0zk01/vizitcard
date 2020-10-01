@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'mailer',
     'app',
 ]
 
@@ -123,6 +124,15 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
+
+TOKEN_LIFETIME = 1
+
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'vizitcardnoreplyl@gmail.com'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'vizitcardnoreply@gmail.com'
+EMAIL_HOST_PASSWORD = 'vizitcard_no_reply'
+EMAIL_PORT = 587
 
 STATIC_URL = '/static/'
 

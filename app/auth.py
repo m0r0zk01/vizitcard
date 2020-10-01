@@ -4,9 +4,11 @@ from app.models import User
 
 class EmailAuthentication(BaseBackend):
     def authenticate(self, request, username=None, password=None):
-        user = User.objects.get(email=username)
-        password_valid = user.check_password(password)
-        if user and password_valid:
+        try:
+            user = User.objects.get(email=username)
+        except User.DoesNotExist:
+            return None
+        if user.check_password(password) and user.is_active:
             return user
         return None
 

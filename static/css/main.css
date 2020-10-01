@@ -198,10 +198,11 @@ footer {
     align-items: center;
 }
 
-.top_line button {
+.top_line button, .top_line button:hover, .top_line button:active {
     position: relative;
-    top: 15px;
-    align-content: center;
+    top: 50%;
+    background-color: #0d253b;
+    border-color:  #0d253b;
 }
 
 .text_button {
