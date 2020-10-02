@@ -115,7 +115,9 @@ def login_view(request):
         if user.is_active:
             login(request, user)
         else:
-            return Response('Пользователь не активирован, пожалуйста, проверить почту и перейдите по ссылке из нашего письма', status=400)
+            return Response(
+                'Пользователь не активирован, пожалуйста, проверить почту и перейдите по ссылке из нашего письма',
+                status=400)
     else:
         return Response('Неправильное имя пользователя или пароль', status=400)
     return Response(b'', status=200)
@@ -131,3 +133,7 @@ def profile(request):
     if request.method == 'POST':
         pass
     return render(request, 'profile.html', get_context(request))
+
+
+def test(request):
+    return render(request, 'test.html')

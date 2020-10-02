@@ -1,8 +1,13 @@
+{% load static %}
+
 <nav class="menu" tabindex="0">
-	<ul>
-        <li tabindex="0"><a href="profile">Профиль</a></li>
-        <li tabindex="0"><a href="cards">Визитки</a></li>
-        <li tabindex="0"><a href="organuzations">Организации</a></li>
-        <li tabindex="0"><a href="logout">Выйти</a></li>
-   </ul>
+    <div>
+        <div class="avatar">
+            <a href="profile"><img src="{% static user.avatar %}" alt="avatar"></a>
+            <a href="profile">Профиль</a>
+        </div>
+    </div>
+    <a href="cards">Визитки</a>
+    <a href="organuzations">Организации</a>
+    <a href="logout">Выйти</a>
 </nav>
