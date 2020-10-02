@@ -7,9 +7,6 @@
         body {
             background-color: #FADABE;
         }
-        html, body {
-            min-height: 100% !important;
-        }
     </style>
 {% endblock %}
 
@@ -34,19 +31,66 @@
         function swap_to_log() {
             document.getElementById('swap_to_log').addEventListener('click', function foo () {
                 $('#reg_form').replaceWith(`{% include 'login.html' %}`);
+                login_listener();
                 swap_to_reg();
             });
         }
         function swap_to_reg() {
             document.getElementById('swap_to_reg').addEventListener('click', function foo () {
                 $('#log_form').replaceWith(`{% include 'register.html' %}`);
+                register_listener();
                 swap_to_log();
             });
         }
-
-        function kek() {
-            console.log(1);
-        }
         swap_to_log();
+
+        function register_listener() {
+            $("#register_button").on("click", function() {
+                let formData = new FormData(document.getElementById('registration_form'));
+               $.ajax({
+                    url: '/register',
+                    data: formData,
+                    type: 'POST',
+                    processData: false,
+                    contentType: false,
+                    success: function () {
+                        document.getElementById('swap_to_log').click();
+                    },
+                    error: function (data) {
+                        let arr = ['username', 'password', 'email', 'confirm'];
+                        data = data['responseJSON'];
+                        console.log(data);
+                        arr.forEach((el)=>{
+                            let error_str = '';
+                            data[el].forEach((e) => {
+                               error_str += e + ' | ';
+                            });
+                            $('#' + el + '_error').text(error_str.slice(0, Math.max(0, error_str.length - 2)));
+                        });
+                    }
+                });
+            });
+        }
+
+        function login_listener() {
+            $("#login_button").on("click", function() {
+                let formData = new FormData(document.getElementById('login_form'));
+                $.ajax({
+                    url: '/login',
+                    data: formData,
+                    type: 'POST',
+                    processData: false,
+                    contentType: false,
+                    success: function() {
+                        window.location.reload(false);
+                    },
+                    error: function (data) {
+                        console.log(data);
+                        $('#login_error').text(data['responseJSON']);
+                    }
+                });
+            });
+        }
+        register_listener()
     </script>
 {% endblock %}

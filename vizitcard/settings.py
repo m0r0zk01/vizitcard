@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'mailer',
     'app',
 ]
@@ -88,7 +89,7 @@ DATABASES = {
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.AllowAllUsersModelBackend',
     'app.auth.EmailAuthentication'
 ]
 
@@ -135,6 +136,7 @@ EMAIL_HOST_PASSWORD = 'vizitcard_no_reply'
 EMAIL_PORT = 587
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL)
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')

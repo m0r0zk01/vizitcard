@@ -3,10 +3,11 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from scripts.token_generator import generate_token
 from datetime import datetime
+from vizitcard.settings import STATIC_ROOT
 
 
 class User(AbstractUser):
-    pass
+    avatar = models.ImageField(default=STATIC_ROOT + 'img/default_avatar.png')
 
 
 class Card(models.Model):
@@ -38,5 +39,6 @@ class Organization(models.Model):
 
 class Token(models.Model):
     token = models.CharField(max_length=30, default=generate_token(), null=False)
-    user = models.ForeignKey(to=User, blank=True, on_delete=models.PROTECT, null=True)
+    token_type = models.CharField(max_length=30, default='activation')
     creation_date = models.DateTimeField(default=timezone.now())
+    user = models.ForeignKey(to=User, blank=True, on_delete=models.PROTECT, null=True)

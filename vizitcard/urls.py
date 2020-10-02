@@ -27,5 +27,8 @@ urlpatterns = [
     path('login', login_view),
     path('logout', logout_view),
     path('reset_password', auth_views.PasswordChangeView.as_view()),
-    path('activate/<str:token>', validate_user)
+    path('activate/<str:token>', validate_user),
+    path('profile', profile),
+    path('forgot_password', forgot_password),
+    path('forgot_password/<str:token>', new_password),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
