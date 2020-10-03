@@ -36,9 +36,9 @@ def register(request):
     if User.objects.filter(email=email).count():
         errors['email'].append('Почта занята')
     if not (5 <= len(username) <= 20):
-        errors['username'].append('Длина имени от 5 до 20 плиз')
+        errors['username'].append('Длина имени от 5 до 20 символов')
     if not (8 <= len(password) <= 30):
-        errors['password'].append('Длина пароля от 8 до 30 плиз')
+        errors['password'].append('Длина пароля от 8 до 30 символов')
     if password != confirm_password:
         errors['confirm'].append('Пароли не совпадают')
 
@@ -138,6 +138,8 @@ def change_profile(request):
     except MultiValueDictKeyError:
         avatar = None
 
+    print(password, new)
+
     error = ''
     user = request.user
     if first_name:
@@ -148,14 +150,18 @@ def change_profile(request):
         user.biography = biography
     if location:
         user.location = location
+    print(1)
     if user.check_password(password) and new:
+        print(123)
         user.set_password(new)
-    if password and not user.check_password(password):
+    elif password and not user.check_password(password):
+        print(666)
         error = 'Неправильный пароль'
     if avatar:
         fs = FileSystemStorage(location='static/img/avatars')
         fs.save(avatar.name, avatar)
         user.avatar = 'img/avatars/' + avatar.name
+    print(7)
     user.save()
     return Response(b'' if not error else error, status=200)
 
@@ -170,6 +176,10 @@ def profile(request):
     if request.method == 'POST':
         pass
     return render(request, 'profile.html', get_context(request))
+
+
+def kek(request):
+    return redirect('/')
 
 
 def test(request):

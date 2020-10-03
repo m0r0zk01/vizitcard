@@ -94,6 +94,11 @@
             });
         }
 
+        $('#fast_login').on('click', () => {
+            document.getElementById('swap_to_log').click();
+            location.hash = "#log_form";
+        });
+
         register_listener()
     </script>
 {% endblock %}
