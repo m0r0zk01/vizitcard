@@ -7,7 +7,7 @@ from vizitcard.settings import STATIC_ROOT
 
 
 class User(AbstractUser):
-    avatar = models.ImageField(default='img/avatars/default_avatar.png')
+    avatar = models.ImageField(default='img/avatars/default_avatar.png', upload_to='img/avatars/')
     biography = models.TextField(null=True)
     location = models.TextField(null=True)
 

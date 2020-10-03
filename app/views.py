@@ -1,6 +1,8 @@
-from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth import authenticate, logout, login, get_user
+from django.utils.datastructures import MultiValueDictKeyError
+from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.decorators import login_required
+from django.core.files.storage import FileSystemStorage
 from django.core.mail import send_mail
 from django.utils import timezone
 from django.db.models import Q
@@ -121,6 +123,41 @@ def login_view(request):
     else:
         return Response('Неправильное имя пользователя или пароль', status=400)
     return Response(b'', status=200)
+
+
+@api_view(['POST'])
+def change_profile(request):
+    first_name = request.POST['first_name']
+    last_name = request.POST['last_name']
+    biography = request.POST['biography']
+    location = request.POST['location']
+    password = request.POST['password']
+    new = request.POST['new_password']
+    try:
+        avatar = request.FILES['avatar']
+    except MultiValueDictKeyError:
+        avatar = None
+
+    error = ''
+    user = request.user
+    if first_name:
+        user.first_name = first_name
+    if last_name:
+        user.last_name = last_name
+    if biography:
+        user.biography = biography
+    if location:
+        user.location = location
+    if user.check_password(password) and new:
+        user.set_password(new)
+    if password and not user.check_password(password):
+        error = 'Неправильный пароль'
+    if avatar:
+        fs = FileSystemStorage(location='static/img/avatars')
+        fs.save(avatar.name, avatar)
+        user.avatar = 'img/avatars/' + avatar.name
+    user.save()
+    return Response(b'' if not error else error, status=200)
 
 
 @login_required()

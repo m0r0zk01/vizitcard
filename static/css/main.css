@@ -10,112 +10,6 @@ body {
     background-color: #FADABE !important;
 }
 
-.login-box {
-    margin-top: 10px;
-    height: auto;
-    background: #1A2226;
-    text-align: center;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-}
-
-.login-key {
-    height: 100px;
-    font-size: 80px;
-    line-height: 100px;
-    background: -webkit-linear-gradient(#27EF9F, #F2482C);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.login-title {
-    margin-top: 60px;
-    text-align: center;
-    font-size: 30px;
-    letter-spacing: 2px;
-    font-weight: bold;
-    color: #ECF0F5;
-}
-
-.login-form {
-    margin-top: 25px;
-    text-align: left;
-}
-
-.login-form input[type=text], .login-form input[type=email], .login-form input[type=password], .login-form input[readonly] {
-    background-color: #1A2226;
-    border: none;
-    border-bottom: 2px solid #F2482C;
-    border-top: 0;
-    border-radius: 0;
-    font-weight: bold;
-    outline: 0;
-    margin-bottom: 20px;
-    padding-left: 0;
-    color: #ECF0F5;
-}
-
-.login-form.form-group {
-    margin-bottom: 10px;
-    outline: 0;
-}
-
-.login-form.form-control:focus {
-    border-color: inherit;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-    border-bottom: 2px solid #F2482C;
-    outline: 0;
-    background-color: #1A2226;
-    color: #ECF0F5;
-}
-
-.login-form input:focus {
-    outline: none;
-    box-shadow: 0 0 0;
-}
-
-.login-form label {
-    margin-bottom: 0;
-}
-
-.login-form.form-control-label {
-    font-size: 10px;
-    color: #6C6C6C;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
-
-.login-form.btn-outline-primary {
-    border-color: #F2482C;
-    color: #F2482C;
-    border-radius: 0;
-    font-weight: bold;
-    letter-spacing: 1px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-}
-
-.login-form.btn-outline-primary:hover {
-    background-color: #F2482C;
-    border-color: #F2482C;
-    right: 0;
-}
-
-.login-form.login-btm {
-    float: left;
-}
-
-.login-form.login-button {
-    padding-right: 0;
-    text-align: right;
-    margin-bottom: 25px;
-}
-
-.login-form.login-text {
-    text-align: left;
-    padding-left: 0;
-    color: #A2A4A4;
-}
-
 header {
     height: 1100px;
     font-family: 'Julius Sans One', sans-serif;
@@ -265,7 +159,7 @@ main {
     width: 900px;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 900px) {
     #form-width-kaka {
         width: auto;
     }

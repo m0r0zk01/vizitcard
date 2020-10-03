@@ -15,28 +15,65 @@
     {% include 'patterns/sidebar.html' %}
 
 
-    <form style="margin-left: 240px; width: calc(100% - 240px)" class="px-3">
+    <form id="change_password_form" style="margin-left: 240px; width: calc(100% - 240px)" class="px-3">
+        {% csrf_token %}
         <div class="d-flex">
             <div class="mx-auto" id="form-width-kaka">
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" placeholder="email" readonly>
+                    <input name="email" type="email" class="form-control" id="email" placeholder="email" readonly>
                 </div>
                 <div class="row">
                     <div class="col">
                         <label for="first_name">Имя</label>
-                        <input type="text" class="form-control" id="first_name" placeholder="Имя" readonly>
+                        <input name="first_name" type="text" class="form-control" id="first_name" placeholder="Имя"
+                               {% if user.first_name %}value="{{ user.first_name }}" {% endif %} readonly>
                     </div>
                     <div class="col">
                         <label for="last_name">Фамилия</label>
-                        <input type="text" class="form-control" id="last_name" placeholder="Фамилия" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="location">Местоположение</label>
-                        <input type="text" class="form-control" id="location" placeholder="1234 Main St">
+                        <input name="last_name" type="text" class="form-control" id="last_name" placeholder="Фамилия"
+                                {% if user.last_name %} value="{{ user.last_name }}" {% endif %} readonly>
                     </div>
                 </div>
-                <button type="submit" class="mt-3 btn btn-primary">Submit</button>
+                <div class="form-group">
+                    <label for="location">Местоположение</label>
+                    <input name="location" type="text" class="form-control" id="location"
+                           {% if user.location %}value="{{ user.location }}" {% endif %}
+                           placeholder="Ваше местоположение(страна, город...)" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="biography">О себе</label>
+                    <textarea name="biography" class="form-control" id="biography" rows="3" {% if user.biography %}
+                              value="{{ user.biography }}" {% endif %} placeholder="О себе" readonly></textarea>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label for="first_name">Текущий пароль</label>
+                        <input name="password" type="password" class="form-control" id="password"
+                               placeholder="Текущий пароль"
+                               readonly>
+                    </div>
+                    <div class="col">
+                        <label for="last_name">Новый пароль</label>
+                        <input name="new_password" type="password" class="form-control" id="new_password"
+                               placeholder="Фамилия"
+                               readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlFile1">Загрузить аватар</label>
+                    <input name="avatar" type="file" class="form-control-file" id="avatar" readonly>
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <button id="change_profile" type="button" class="col-3 mt-3 btn btn-primary">Редактировать
+                        </button>
+                        <button id="save_changes" type="button" class="mx-2 mt-3 btn btn-primary" style="display: none">
+                            Сохранить изменения
+                        </button>
+                    </div>
+                    <p class="error_text" id="change_password_error"></p>
+                </div>
             </div>
         </div>
     </form>
@@ -45,6 +82,30 @@
 
 {% block scripts %}
     <script>
-
+        $("#change_profile").on("click", function () {
+            $('input[type=text], input[type=file], input[type=password], textarea').removeAttr('readonly');
+            $('#save_changes').css('display', 'block');
+        });
+        $("#save_changes").on("click", function () {
+            let formData = new FormData(document.getElementById('change_password_form'));
+            $.ajax({
+                url: '/change_profile',
+                data: formData,
+                type: 'POST',
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    console.log(data);
+                    if (data.length)
+                        $('#change_password_error').text(data);
+                    else
+                        window.location.reload(false);
+                },
+                error: function (data) {
+                    console.log(data);
+                    $('#change_profile_error').text(data['responseJSON']);
+                }
+            });
+        });
     </script>
 {% endblock %}
