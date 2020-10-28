@@ -32,5 +32,4 @@ urlpatterns = [
     path('forgot_password', forgot_password),
     path('forgot_password/<str:token>', new_password),
     path('change_profile', change_profile),
-    path('accounts/login/', kek)
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

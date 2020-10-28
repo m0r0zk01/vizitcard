@@ -15,10 +15,10 @@
     {% include 'patterns/sidebar.html' %}
 
 
-    <form id="change_password_form" style="margin-left: 240px; width: calc(100% - 240px)" class="px-3">
+    <form id="change_password_form" style="margin-left: 240px; width: calc(100% - 240px)" class="px-3 pt-4">
         {% csrf_token %}
         <div class="d-flex">
-            <div class="mx-auto" id="form-width-kaka">
+            <div class="mx-auto" id="form-width">
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input name="email" type="email" class="form-control" id="email" placeholder="email" readonly>
