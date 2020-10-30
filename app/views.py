@@ -153,7 +153,10 @@ def change_profile(request):
         fs.save(avatar.name, avatar)
         user.avatar = 'img/avatars/' + avatar.name
     if user.check_password(password) and new:
-        user.set_password(new)
+        if not (8 <= len(new) <= 30):
+            error = 'Длина пароля от 8 до 30 символов'
+        else:
+            user.set_password(new)
     elif password and not user.check_password(password):
         error = 'Неправильный пароль'
     user.save()
@@ -171,3 +174,8 @@ def profile(request):
     if request.method == 'POST':
         pass
     return render(request, 'profile.html', get_context(request))
+
+
+@login_required()
+def organizations(request):
+    return render(request, 'organizations.html')

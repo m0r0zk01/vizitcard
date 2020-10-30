@@ -23,20 +23,21 @@ class Card(models.Model):
     url = models.TextField()
 
 
-class Worker(User):
-    position = models.TextField()
-    photo = models.ImageField()
-    work_card = models.ForeignKey(Card, on_delete=models.SET_NULL, null=True)
-
-
 class Organization(models.Model):
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.TextField()
     description = models.TextField()
 
     card = models.ForeignKey(Card, on_delete=models.SET_NULL, null=True)
 
     workers = models.ManyToManyField
+
+
+class Worker(User):
+    position = models.TextField()
+    photo = models.ImageField()
+    work_card = models.OneToOneField(Card, on_delete=models.SET_NULL, null=True)
+    org = models.ForeignKey(Organization, null=True, default=None, on_delete=models.CASCADE)
 
 
 class Token(models.Model):

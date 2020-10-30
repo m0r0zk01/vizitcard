@@ -1,0 +1,41 @@
+{% extends 'patterns/base.html' %}
+
+{% block style %}
+    <style>
+        body {
+            background-color: #FADABE;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    {% load static %}
+
+    {% include 'patterns/sidebar.html' %}
+
+    {% if worker and worker.organization %}
+        <div>
+            <p class="text-justify pd-4 pd-4">Вы состоите в организации {{ woker.organization.name }}!</p>
+        </div>
+    {% else %}
+        <div>
+            <p class="text-justify">Вы еще не состоите в организации, но можете втсупить в существующую по ключу-приглашению, введя его в поле ниже или заполнить специальную форму регистрации своей организации на сайте</p>
+        </div>
+        <form method="post">
+            <div class="row">
+                <div class="col-3">
+                    <label for="first_name">Войти в организацию</label>
+                    <input name="first_name" type="text" class="form-control" id="first_name" placeholder="Код организации">
+                    </div>
+            </div>
+        </form>
+    {% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+    </script>
+{% endblock %}
