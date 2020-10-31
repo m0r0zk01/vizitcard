@@ -26,41 +26,54 @@
                 </div>
             {% endif %}
         {% else %}
-            <div class="row mx-auto lead">
-                <p class="text-justify">Вы еще не состоите в организации, но можете втсупить в существующую по
-                    ключу-приглашению, введя его в поле ниже или заполнить специальную форму регистрации своей
-                    организации на сайте</p>
-            </div>
-
-            <form method="post" id="enter_org_form">
-                {% csrf_token %}
-                <div class="container">
-                    <div class="row">
-                        <div class="form-group col-5 mb-2 d-block">
-                            <label for="code">Код входа в организацию</label>
-                            <div class="d-flex">
+            <div>
+                <form id="enter_org_form" style="margin-left: 240px; width: calc(100% - 240px)" class="form-horizontal">
+                    {% csrf_token %}
+                    <div class="d-flex mx-auto" style="flex-direction: column">
+                        <div class="mx-auto lead">
+                            <p class="text-justify">Вы еще не состоите в организации, но можете втсупить в существующую
+                                по ключу-приглашению, введя его в поле ниже или заполнить специальную форму регистрации
+                                своей организации на сайте</p>
+                        </div>
+                        <div class="container">
+                            <div class="form-group col-md-5">
+                                <label for="code">Код входа в организацию</label>
+                                <div class="d-flex">
                                 <input type="text" name="code" class="form-control" id="code" placeholder="Код"
                                        required>
                                 <button type="button" id="enter" class="btn btn-primary my-auto ml-2"
                                         style="min-width: 200px">Войти в организацию
                                 </button>
                             </div>
-                            <p class="text-danger" id="org_error"></p>
-                        </div>
-                    </div>
-                </div>
-            </form>
+                                <p class="text-danger" id="org_error" style="height: 10px"></p>
+                            </div>
 
-            <form method="post" id="create_organization" class="form-horizontal">
-                {% csrf_token %}
-                <div class="container">
-                    <div class="row">
-                        <div>
-                                СДЕЛАТЬ ФОРМУ ПОДАЧИ ЗАЯВКИ НА СОЗАДНИЕ ОРГАНИЗАЦИИ!
                         </div>
                     </div>
-                </div>
-            </form>
+                </form>
+
+                <form id="create_organization" style="margin-left: 240px; width: calc(100% - 240px); margin-top: 50px">
+                    {% csrf_token %}
+                    <div class="d-flex mx-auto" style="flex-direction: column">
+                        <div class="mx-auto lead">
+                            <p class="text-justify">Вы можете заполнить форму о регистрации Вашей организации, используя
+                                форму ниже. Модератор рассмотрит заявку и свяжется с Вами</p>
+                        </div>
+                        <div class="container">
+                            <div class="form-group">
+                                <label for="name">Название организации</label>
+                                <input type="text" class="form-control" id="name" placeholder="Суперкалькулятор-3000">
+                            </div>
+                            <div class="form-group">
+                                <label for="description">О себе</label>
+                                <textarea name="description" class="form-control" id="description" rows="3"
+                                          placeholder="Выпускаем лучшие калькуляторы в России. Главный офиис в Москве"></textarea>
+                            </div>
+                            <button type="button" class="btn btn-primary">Отправить заявку</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         {% endif %}
     </div>
 {% endblock %}

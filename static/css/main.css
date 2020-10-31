@@ -158,10 +158,10 @@ main {
 
 
 #form-width {
-    width: 900px;
+    width: 800px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 800px) {
     #form-width {
         width: auto;
     }
