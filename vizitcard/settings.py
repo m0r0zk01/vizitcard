@@ -126,8 +126,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-TOKEN_LIFETIME = 1
-
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'vizitcardnoreplyl@gmail.com'
 EMAIL_HOST = 'smtp.gmail.com'

@@ -14,28 +14,74 @@
 
     {% include 'patterns/sidebar.html' %}
 
-    {% if worker and worker.organization %}
-        <div>
-            <p class="text-justify pd-4 pd-4">Вы состоите в организации {{ woker.organization.name }}!</p>
-        </div>
-    {% else %}
-        <div>
-            <p class="text-justify">Вы еще не состоите в организации, но можете втсупить в существующую по ключу-приглашению, введя его в поле ниже или заполнить специальную форму регистрации своей организации на сайте</p>
-        </div>
-        <form method="post">
-            <div class="row">
-                <div class="col-3">
-                    <label for="first_name">Войти в организацию</label>
-                    <input name="first_name" type="text" class="form-control" id="first_name" placeholder="Код организации">
-                    </div>
+    <div class="container">
+        {% if worker and worker.organization %}
+            {% if worker.organization.creator == user %}
+                <div class="row mx-auto lead">
+                    <p class="text-justify">Вы являетесь создателем организации {{ woker.organization.name }}!</p>
+                </div>
+            {% else %}
+                <div class="row mx-auto lead">
+                    <p class="text-justify">Вы состоите в организации {{ woker.organization.name }}!</p>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="row mx-auto lead">
+                <p class="text-justify">Вы еще не состоите в организации, но можете втсупить в существующую по
+                    ключу-приглашению, введя его в поле ниже или заполнить специальную форму регистрации своей
+                    организации на сайте</p>
             </div>
-        </form>
-    {% endif %}
 
+            <form method="post" id="enter_org_form">
+                {% csrf_token %}
+                <div class="container">
+                    <div class="row">
+                        <div class="form-group col-5 mb-2 d-block">
+                            <label for="code">Код входа в организацию</label>
+                            <div class="d-flex">
+                                <input type="text" name="code" class="form-control" id="code" placeholder="Код"
+                                       required>
+                                <button type="button" id="enter" class="btn btn-primary my-auto ml-2"
+                                        style="min-width: 200px">Войти в организацию
+                                </button>
+                            </div>
+                            <p class="text-danger" id="org_error"></p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <form method="post" id="create_organization" class="form-horizontal">
+                {% csrf_token %}
+                <div class="container">
+                    <div class="row">
+                        <div>
+                                СДЕЛАТЬ ФОРМУ ПОДАЧИ ЗАЯВКИ НА СОЗАДНИЕ ОРГАНИЗАЦИИ!
+                        </div>
+                    </div>
+                </div>
+            </form>
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block scripts %}
     <script>
-
+        $("#enter").on("click", function () {
+            let formData = new FormData(document.getElementById('enter_org_form'));
+            $.ajax({
+                url: '/enter_organization',
+                data: formData,
+                type: 'POST',
+                processData: false,
+                contentType: false,
+                success: function () {
+                    window.location.reload(false);
+                },
+                error: function (data) {
+                    $('#org_error').text(data['responseJSON']);
+                }
+            });
+        });
     </script>
 {% endblock %}

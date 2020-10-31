@@ -17,6 +17,9 @@
     <div class="menu-el">
         <a href="organizations">Организации</a>
     </div>
+    {% if user.is_superuser %}
+
+    {% endif %}
     <div class="menu-el">
         <a href="logout">Выйти</a>
     </div>

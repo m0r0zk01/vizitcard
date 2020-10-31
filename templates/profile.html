@@ -21,7 +21,7 @@
             <div class="mx-auto" id="form-width">
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input name="email" type="email" class="form-control" id="email" placeholder="email" readonly>
+                    <input name="email" type="email" class="form-control" id="email" value="{{ user.email }}" readonly>
                 </div>
                 <div class="row">
                     <div class="col">
@@ -72,7 +72,7 @@
                             Сохранить изменения
                         </button>
                     </div>
-                    <p class="error_text" id="change_password_error"></p>
+                    <p class="text-danger" id="change_password_error"></p>
                 </div>
             </div>
         </div>

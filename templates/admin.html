@@ -1,0 +1,24 @@
+{% extends 'patterns/base.html' %}
+
+{% block style %}
+    <style>
+        body {
+            background-color: #FADABE;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    {% load static %}
+
+    {% include 'patterns/sidebar.html' %}
+
+    <div class="container d-flex">
+        {% for org in requests %}
+            <div class="row">
+                {{ org.name }}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -1,13 +1,13 @@
 from django.contrib.auth import authenticate, logout, login, get_user
 from django.utils.datastructures import MultiValueDictKeyError
 from django.shortcuts import render, HttpResponse, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.files.storage import FileSystemStorage
 from django.core.mail import send_mail
 from django.utils import timezone
 from django.db.models import Q
-from vizitcard.settings import EMAIL_HOST_USER, TOKEN_LIFETIME
-from app.models import User, Token
+from vizitcard.settings import EMAIL_HOST_USER
+from app.models import *
 from datetime import datetime, timedelta
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -64,7 +64,7 @@ def validate_user(request, token):
         token_obj = Token.objects.get(token=token, token_type='activation')
     except Token.DoesNotExist:
         return HttpResponse('Wrong token')
-    if token_obj.creation_date + timedelta(days=TOKEN_LIFETIME) > timezone.now():
+    if token_obj.creation_date + timedelta(days=token_obj.lifetime) > timezone.now():
         user = token_obj.user
         user.is_active = True
         user.save()
@@ -91,7 +91,7 @@ def new_password(request, token):
         token_obj = Token.objects.get(token=token, token_type='forgot_password')
     except Token.DoesNotExist:
         return HttpResponse('Неправильный токен')
-    if token_obj.creation_date + timedelta(days=TOKEN_LIFETIME) < timezone.now():
+    if token_obj.creation_date + timedelta(days=token_obj.lifetime) < timezone.now():
         token_obj.delete()
         return HttpResponse('Время жизни токена закончилось')
     if request.method == 'GET':
@@ -171,11 +171,47 @@ def logout_view(request):
 
 @login_required()
 def profile(request):
-    if request.method == 'POST':
-        pass
     return render(request, 'profile.html', get_context(request))
 
 
 @login_required()
 def organizations(request):
     return render(request, 'organizations.html')
+
+
+@login_required()
+@api_view(['POST'])
+def enter_organization(request):
+    code = request.POST.get('code', None)
+    if code is None:
+        return Response('Код не введен', status=400)
+    try:
+        code_obj = Token.objects.get(Q(token_type='org') & Q(token=code))
+    except Token.DoesNotExist:
+        return Response('Неправильный код доступа', status=400)
+    if code_obj:
+        user = request.user
+        new_worker = Worker(org=OrganizationToken.org)
+        new_worker.save()
+        user.worker = new_worker
+        user.save()
+    return Response(status=200)
+
+
+@login_required()
+@user_passes_test(lambda u: u.is_superuser)
+def admin(request):
+    return render(request, 'admin.html', context={'requests': Organization.objects.filter(activated=False)})
+
+
+@api_view(['POST'])
+def activate_organization(request):
+    org_id = request.POST.get('id', None)
+    if not org_id:
+        return Response('Не передан id', status=400)
+    try:
+        org = Organization.objects.get(pk=org_id)
+    except Organization.DoesNotExist:
+        return Response('Не найдена организация с таким id', status=400)
+    org.activated = True
+    org.save()

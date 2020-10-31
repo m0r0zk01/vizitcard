@@ -21,7 +21,6 @@ from django.urls import path
 from app.views import *
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', index),
     path('register', register),
     path('login', login_view),
@@ -32,5 +31,7 @@ urlpatterns = [
     path('forgot_password', forgot_password),
     path('forgot_password/<str:token>', new_password),
     path('change_profile', change_profile),
-    path('organizations', organizations)
+    path('organizations', organizations),
+    path('enter_organization', enter_organization),
+    path('admin', admin)
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
