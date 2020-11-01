@@ -25,7 +25,6 @@ urlpatterns = [
     path('register', register),
     path('login', login_view),
     path('logout', logout_view),
-    path('reset_password', auth_views.PasswordChangeView.as_view()),
     path('activate/<str:token>', validate_user),
     path('profile', profile),
     path('forgot_password', forgot_password),
@@ -33,5 +32,6 @@ urlpatterns = [
     path('change_profile', change_profile),
     path('organizations', organizations),
     path('enter_organization', enter_organization),
+    path('request_create_organization', request_create_organization),
     path('admin', admin)
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

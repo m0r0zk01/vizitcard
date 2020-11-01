@@ -205,6 +205,7 @@ def admin(request):
 
 
 @api_view(['POST'])
+@user_passes_test(lambda u: u.is_superuser)
 def activate_organization(request):
     org_id = request.POST.get('id', None)
     if not org_id:
@@ -215,3 +216,16 @@ def activate_organization(request):
         return Response('Не найдена организация с таким id', status=400)
     org.activated = True
     org.save()
+
+
+@api_view(['POST'])
+@login_required()
+def request_create_organization(request):
+    print(123)
+    name = request.POST.get('name', None)
+    description = request.POST.get('description', None)
+    if not name:
+        return Response('Не указано название', status=400)
+    new_org = Organization(name=name, description=description, creator=request.user)
+    new_org.save()
+    return Response(status=200)

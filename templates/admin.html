@@ -14,10 +14,20 @@
 
     {% include 'patterns/sidebar.html' %}
 
-    <div class="container d-flex">
+    <div class="container">
+        {% if not requests %}
+            <div class="lead">
+                <p>Нет запросов на регистрацию организации</p>
+            </div>
+        {% endif %}
         {% for org in requests %}
             <div class="row">
-                {{ org.name }}
+                <div class="col-md-1">
+                    {{ org.name }}
+                </div>
+                <div class="col-md-8">
+                    <button type="button" class="btn btn-success">Принять</button>
+                </div>
             </div>
         {% endfor %}
     </div>

@@ -62,14 +62,14 @@
                         <div class="container">
                             <div class="form-group">
                                 <label for="name">Название организации</label>
-                                <input type="text" class="form-control" id="name" placeholder="Суперкалькулятор-3000">
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Суперкалькулятор-3000">
                             </div>
                             <div class="form-group">
-                                <label for="description">О себе</label>
+                                <label for="description">Описание</label>
                                 <textarea name="description" class="form-control" id="description" rows="3"
                                           placeholder="Выпускаем лучшие калькуляторы в России. Главный офиис в Москве"></textarea>
                             </div>
-                            <button type="button" class="btn btn-primary">Отправить заявку</button>
+                            <button type="button" id="create_organization_button" class="btn btn-primary">Отправить заявку</button>
                         </div>
                     </div>
                 </form>
@@ -84,6 +84,20 @@
             let formData = new FormData(document.getElementById('enter_org_form'));
             $.ajax({
                 url: '/enter_organization',
+                data: formData,
+                type: 'POST',
+                processData: false,
+                contentType: false,
+                success: function () {
+                    window.location.reload(false);
+                }
+            });
+        });
+
+        $("#create_organization_button").on("click", function () {
+            let formData = new FormData(document.getElementById('create_organization'));
+            $.ajax({
+                url: '/request_create_organization',
                 data: formData,
                 type: 'POST',
                 processData: false,
