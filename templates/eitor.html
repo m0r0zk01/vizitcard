@@ -129,7 +129,6 @@
         dragOK = true;
 
         let clicked = null;
-        console.log(objects);
         for (let i = 0; i < objects.length; i++) {
             if (mx > objects[i].x1 && mx < objects[i].x2 && my > objects[i].y1 && my < objects[i].y2) {
                 if (clicked == null || objects[i].z > objects[clicked].z)
