@@ -31,7 +31,7 @@ class Organization(models.Model):
     activated = models.BooleanField(default=False)
 
     card = models.ForeignKey(Card, on_delete=models.SET_NULL, null=True)
-    workers = models.ManyToManyField('Worker')
+    workers = models.ForeignKey('Worker', null=True, default=None, on_delete=models.PROTECT)
 
 
 class Worker(models.Model):
