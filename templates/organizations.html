@@ -14,7 +14,7 @@
 
     {% include 'patterns/sidebar.html' %}
 
-    <div class="container">
+    <div class="container" id="form-width">
         {% if worker and worker.organization %}
             {% if worker.organization.creator == user %}
                 <div class="row mx-auto lead">
@@ -27,7 +27,7 @@
             {% endif %}
         {% else %}
             <div>
-                <form id="enter_org_form" style="margin-left: 240px; width: calc(100% - 240px)" class="form-horizontal">
+                <form id="enter_org_form" class="form-horizontal">
                     {% csrf_token %}
                     <div class="d-flex mx-auto" style="flex-direction: column">
                         <div class="mx-auto lead">
@@ -52,7 +52,7 @@
                     </div>
                 </form>
 
-                <form id="create_organization" style="margin-left: 240px; width: calc(100% - 240px); margin-top: 50px">
+                <form id="create_organization">
                     {% csrf_token %}
                     <div class="d-flex mx-auto" style="flex-direction: column">
                         <div class="mx-auto lead">

@@ -4,7 +4,7 @@
     <div>
         <div class="avatar">
             {% if user.avatar %}
-             <a href="profile"><img src="{% static user.avatar %}" alt="avatar"></a>
+                <a href="profile"><img src="{% static user.avatar %}" alt="avatar"></a>
             {% else %}
                 <a href="profile"><img src="{% static "/img/avatars/default_avatar.png" %}" alt="avatar"></a>
             {% endif %}
@@ -12,13 +12,15 @@
         </div>
     </div>
     <div class="menu-el">
-        <a href="cards">Визитки</a>
+        <a href="/">Визитки</a>
     </div>
     <div class="menu-el">
         <a href="organizations">Организации</a>
     </div>
     {% if user.is_superuser %}
-
+        <div class="menu-el">
+            <a href="admin">Админ</a>
+        </div>
     {% endif %}
     <div class="menu-el">
         <a href="logout">Выйти</a>

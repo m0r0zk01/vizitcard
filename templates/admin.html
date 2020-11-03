@@ -1,33 +1,28 @@
 {% extends 'patterns/base.html' %}
 
-{% block style %}
-    <style>
-        body {
-            background-color: #FADABE;
-        }
-    </style>
-{% endblock %}
-
 {% block content %}
 
     {% load static %}
 
     {% include 'patterns/sidebar.html' %}
 
-    <div class="container">
-        {% if not requests %}
-            <div class="lead">
-                <p>Нет запросов на регистрацию организации</p>
-            </div>
-        {% endif %}
+    {% if not requests %}
+        <div class="lead">
+            <p>Нет запросов на регистрацию организации</p>
+        </div>
+    {% endif %}
+
+    <div class="container mx-auto" style="overflow: auto; margin-left: 240px; width: calc(100% - 240px)">
         {% for org in requests %}
-            <div class="row">
-                <div class="col-md-1">
+            <div class="row request_info mt-2 py-2">
+                <div class="col-md-2">
                     {{ org.name }}
                 </div>
-                <div class="col-md-8">
-                    <button type="button" class="btn btn-success">Принять</button>
+                <div class="col-md-6">
+                    {% lorem 1 %}
                 </div>
+                <button class="btn btn-success">Принять</button>
+                <button class="btn btn-danger">Отклонить</button>
             </div>
         {% endfor %}
     </div>
