@@ -21,30 +21,34 @@
             <div class="mx-auto" id="form-width">
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input name="email" type="email" class="form-control" id="email" value="{{ user.email }}" readonly>
+                    <input name="email" type="email" class="form-control" id="email" value="{{ profile_owner.email }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="username">Никнейм</label>
+                    <input name="username" type="text" class="form-control" id="username" value="{{ profile_owner.username }}" readonly>
                 </div>
                 <div class="row">
                     <div class="col">
                         <label for="first_name">Имя</label>
                         <input name="first_name" type="text" class="form-control" id="first_name" placeholder="Имя"
-                               {% if user.first_name %}value="{{ user.first_name }}" {% endif %} readonly>
+                               {% if profile_owner.first_name %}value="{{ profile_owner.first_name }}" {% endif %} readonly>
                     </div>
                     <div class="col">
                         <label for="last_name">Фамилия</label>
                         <input name="last_name" type="text" class="form-control" id="last_name" placeholder="Фамилия"
-                                {% if user.last_name %} value="{{ user.last_name }}" {% endif %} readonly>
+                                {% if profile_owner.last_name %} value="{{ profile_owner.last_name }}" {% endif %} readonly>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="location">Местоположение</label>
                     <input name="location" type="text" class="form-control" id="location"
-                           {% if user.location %}value="{{ user.location }}" {% endif %}
+                           {% if profile_owner.location %}value="{{ profile_owner.location }}" {% endif %}
                            placeholder="Ваше местоположение(страна, город...)" readonly>
                 </div>
                 <div class="form-group">
                     <label for="biography">О себе</label>
-                    <textarea name="biography" class="form-control" id="biography" rows="3" {% if user.biography %}
-                              value="{{ user.biography }}" {% endif %} placeholder="О себе" readonly></textarea>
+                    <textarea name="biography" class="form-control" id="biography" rows="3" {% if profile_owner.biography %}
+                              value="{{ profile_owner.biography }}" {% endif %} placeholder="О себе" readonly></textarea>
                 </div>
                 <div class="row">
                     <div class="col">
@@ -60,20 +64,22 @@
                                readonly>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="exampleFormControlFile1">Загрузить аватар</label>
-                    <input name="avatar" type="file" class="form-control-file" id="avatar" readonly>
-                </div>
-                <div class="container">
-                    <div class="row">
-                        <button id="change_profile" type="button" class="col-3 mt-3 btn btn-primary">Редактировать
-                        </button>
-                        <button id="save_changes" type="button" class="mx-2 mt-3 btn btn-primary" style="display: none">
-                            Сохранить изменения
-                        </button>
+                {% if user == profile_owner %}
+                    <div class="form-group">
+                        <label for="exampleFormControlFile1">Загрузить аватар</label>
+                        <input name="avatar" type="file" class="form-control-file" id="avatar" readonly>
                     </div>
-                    <p class="text-danger" id="change_password_error"></p>
-                </div>
+                    <div class="container">
+                        <div class="row">
+                            <button id="change_profile" type="button" class="col-3 mt-3 btn btn-primary">Редактировать
+                            </button>
+                            <button id="save_changes" type="button" class="mx-2 mt-3 btn btn-primary" style="display: none">
+                                Сохранить изменения
+                            </button>
+                        </div>
+                        <p class="text-danger" id="change_password_error"></p>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </form>
@@ -94,15 +100,10 @@
                 type: 'POST',
                 processData: false,
                 contentType: false,
-                success: function (data) {
-                    console.log(data);
-                    if (data.length)
-                        $('#change_password_error').text(data);
-                    else
-                        window.location.reload(false);
+                success: function () {
+                    window.location.reload(false);
                 },
                 error: function (data) {
-                    console.log(data);
                     $('#change_profile_error').text(data['responseJSON']);
                 }
             });

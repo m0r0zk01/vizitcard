@@ -7,7 +7,7 @@
     {% include 'patterns/sidebar.html' %}
 
     {% if not requests %}
-        <div class="lead">
+        <div class="lead" style="text-align: center">
             <p>Нет запросов на регистрацию организации</p>
         </div>
     {% endif %}
@@ -19,11 +19,50 @@
                     {{ org.name }}
                 </div>
                 <div class="col-md-6">
-                    {% lorem 1 %}
+                    {{ org.description }}
                 </div>
-                <button class="btn btn-success">Принять</button>
-                <button class="btn btn-danger">Отклонить</button>
+                <form id="form{{ org.pk }}a" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="id" value="{{ org.pk }}" hidden>
+                    <input type="text" name="type" value="accept" hidden>
+                    <button type="button" class="btn btn-success send_request" id="{{ org.pk }}a">Принять</button>
+                </form>
+                <form id="form{{ org.pk }}d" method="post">
+                    {% csrf_token %}
+                    <input type="text" name="id" value="{{ org.pk }}" hidden>
+                    <input type="text" name="type" value="decline" hidden>
+                    <button type="button" class="btn btn-danger send_request" id="{{ org.pk }}d">Отклонить</button>
+                </form>
             </div>
         {% endfor %}
     </div>
+    <div class="text-danger" id="activation_error">
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        window.onload = () => {
+            [...document.querySelectorAll('.send_request')].forEach(button => {
+                button.addEventListener('click', function (e) {
+                    console.log('form' + button.id);
+                    console.log(document.getElementById('form' + button.id));
+                    let formData = new FormData(document.getElementById('form' + button.id));
+                    $.ajax({
+                        url: '/activate_organization',
+                        data: formData,
+                        type: 'POST',
+                        processData: false,
+                        contentType: false,
+                        success: function () {
+                            window.location.reload(false);
+                        },
+                        error: function (data) {
+                            $('#activation_error').text(data['responseJSON']);
+                        }
+                    })
+                });
+            });
+        };
+    </script>
 {% endblock %}

@@ -170,13 +170,36 @@ def logout_view(request):
 
 
 @login_required()
-def profile(request):
-    return render(request, 'profile.html', get_context(request))
+def profile(request, **kwargs):
+    try:
+        profile_owner = User.objects.get(username=kwargs['username'])
+    except:
+        profile_owner = request.user
+    return render(request, 'profile.html', {'user': request.user, 'profile_owner': profile_owner})
 
 
 @login_required()
 def organizations(request):
-    return render(request, 'organizations.html')
+    return render(request, 'organizations.html', {'worker': User.objects.get(username=request.user.username).worker})
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin(request):
+    return render(request, 'admin.html', context={'requests': Organization.objects.filter(activated=False)})
+
+
+def add_user_to_organization(user_id, organization_id):
+    user = User.objects.get(id=user_id)
+    org = Organization.objects.get(id=organization_id)
+    if user.worker is None:
+        worker = Worker(user=user)
+        worker.save()
+        user.worker = worker
+    print(user, user.worker, org)
+    user.worker.org = org
+    print(user.worker)
+    user.worker.save()
+    user.save()
 
 
 @login_required()
@@ -186,26 +209,15 @@ def enter_organization(request):
     if code is None:
         return Response('Код не введен', status=400)
     try:
-        code_obj = Token.objects.get(Q(token_type='org') & Q(token=code))
-    except Token.DoesNotExist:
+        code_obj = OrganizationToken.objects.get(Q(token_type='org') & Q(token=code))
+    except OrganizationToken.DoesNotExist:
         return Response('Неправильный код доступа', status=400)
-    if code_obj:
-        user = request.user
-        new_worker = Worker(org=OrganizationToken.org)
-        new_worker.save()
-        user.worker = new_worker
-        user.save()
+    add_user_to_organization(request.user.id, code_obj.org.id)
     return Response(status=200)
 
 
-@login_required()
-@user_passes_test(lambda u: u.is_superuser)
-def admin(request):
-    return render(request, 'admin.html', context={'requests': Organization.objects.filter(activated=False)})
-
-
+@user_passes_test(lambda u: u.is_superuser, login_url='/')
 @api_view(['POST'])
-@user_passes_test(lambda u: u.is_superuser)
 def activate_organization(request):
     org_id = request.POST.get('id', None)
     if not org_id:
@@ -214,18 +226,34 @@ def activate_organization(request):
         org = Organization.objects.get(pk=org_id)
     except Organization.DoesNotExist:
         return Response('Не найдена организация с таким id', status=400)
-    org.activated = True
-    org.save()
+    _type = request.POST.get('type', None)
+    if _type is None:
+        return Response('Не указано действие', status=400)
+    if _type == 'accept':
+        org.activated = True
+        org.save()
+    else:
+        org.delete()
+    return Response(status=200)
 
 
 @api_view(['POST'])
 @login_required()
 def request_create_organization(request):
-    print(123)
     name = request.POST.get('name', None)
     description = request.POST.get('description', None)
     if not name:
         return Response('Не указано название', status=400)
     new_org = Organization(name=name, description=description, creator=request.user)
     new_org.save()
+    add_user_to_organization(request.user.id, new_org.id)
     return Response(status=200)
+
+
+@api_view(['POST'])
+@login_required()
+def delete_organization(request):
+    pk = request.POST.get('id', None)
+    if not pk:
+        return Response('id не указан', status=400)
+

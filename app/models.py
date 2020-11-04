@@ -30,14 +30,13 @@ class Organization(models.Model):
     description = models.TextField()
     activated = models.BooleanField(default=False)
 
-    card = models.ForeignKey(Card, on_delete=models.SET_NULL, null=True)
-    workers = models.ManyToManyField('Worker')
+    card = models.OneToOneField(Card, null=True, on_delete=models.SET_NULL)
 
 
 class Worker(models.Model):
     position = models.TextField(default="", editable=False)
-    work_card = models.OneToOneField(Card, on_delete=models.SET_NULL, null=True, default=None)
-    org = models.ForeignKey(Organization, null=True, default=None, on_delete=models.CASCADE)
+    work_card = models.OneToOneField(Card, null=True, default=None, on_delete=models.SET_NULL)
+    org = models.OneToOneField(Organization, null=True, default=None, on_delete=models.CASCADE)
 
 
 class Token(models.Model):
@@ -45,7 +44,7 @@ class Token(models.Model):
     token_type = models.CharField(max_length=30, default='activation')
     creation_date = models.DateTimeField(default=timezone.now)
     lifetime = models.IntegerField(default=1)
-    user = models.ForeignKey(to=User, blank=True, on_delete=models.PROTECT, null=True)
+    user = models.OneToOneField(to=User, blank=True, null=True, on_delete=models.PROTECT)
 
 
 class OrganizationToken(Token):

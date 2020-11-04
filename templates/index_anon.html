@@ -2,6 +2,15 @@
 
 {% block title %} Welcome to vizitcard {% endblock %}
 
+{% block style %}
+    <style>
+        main {
+            width: 100%;
+            margin-left: 0;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
 
     {% include 'patterns/header.html' %}
@@ -76,6 +85,7 @@
                     processData: false,
                     contentType: false,
                     success: function () {
+                        window.scrollTo(0, 0);
                         window.location.reload(false);
                     },
                     error: function (data) {

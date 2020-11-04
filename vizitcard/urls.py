@@ -27,11 +27,13 @@ urlpatterns = [
     path('logout', logout_view),
     path('activate/<str:token>', validate_user),
     path('profile', profile),
+    path('profile/<str:username>', profile),
     path('forgot_password', forgot_password),
     path('forgot_password/<str:token>', new_password),
     path('change_profile', change_profile),
     path('organizations', organizations),
     path('enter_organization', enter_organization),
     path('request_create_organization', request_create_organization),
+    path('activate_organization', activate_organization),
     path('admin', admin)
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

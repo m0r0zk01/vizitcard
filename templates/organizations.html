@@ -15,14 +15,32 @@
     {% include 'patterns/sidebar.html' %}
 
     <div class="container" id="form-width">
-        {% if worker and worker.organization %}
-            {% if worker.organization.creator == user %}
+        {% if worker and worker.org %}
+            {% if worker.org.creator == user %}
                 <div class="row mx-auto lead">
-                    <p class="text-justify">Вы являетесь создателем организации {{ woker.organization.name }}!</p>
+                    <p class="text-justify">Вы являетесь создателем организации &nbsp;</p>
+                    <p class="font-weight-bold">{{ worker.org.name }}</p>
+                    <p>!</p>
                 </div>
+                {% if not worker.org.activated %}
+                    <div style="display: inline-block">
+                        <div class="text" style="display: inline-block">
+                            <p class="text-justify">Ваша заявка отправлена и в скором времени будет рассмотрена
+                                модератором. Вы можете</p>
+                        </div>
+                        <form style="display: inline-block">
+                            {% csrf_token %}
+                            <input type="text" name="id" value="{{ worker.org.id }}" hidden>
+                            <button type="button" class="btn btn-danger" style="display: inline-block">удалить</button>
+                        </form>
+                        <div class="text" style="display: inline-block">
+                            <p class="text-justify">заявку</p>
+                        </div>
+                    </div>
+                {% endif %}
             {% else %}
                 <div class="row mx-auto lead">
-                    <p class="text-justify">Вы состоите в организации {{ woker.organization.name }}!</p>
+                    <p class="text-justify">Вы состоите в организации {{ woker.org.name }}!</p>
                 </div>
             {% endif %}
         {% else %}
@@ -39,12 +57,12 @@
                             <div class="form-group" style="max-width: 300px">
                                 <label for="code">Код входа в организацию</label>
                                 <div class="d-flex">
-                                <input type="text" name="code" class="form-control" id="code" placeholder="Код"
-                                       required>
-                                <button type="button" id="enter" class="btn btn-primary my-auto ml-2"
-                                        style="min-width: 200px">Войти в организацию
-                                </button>
-                            </div>
+                                    <input type="text" name="code" class="form-control" id="code" placeholder="Код"
+                                           required>
+                                    <button type="button" id="enter" class="btn btn-primary my-auto ml-2"
+                                            style="min-width: 200px">Войти в организацию
+                                    </button>
+                                </div>
                                 <p class="text-danger" id="org_error" style="height: 10px"></p>
                             </div>
 
@@ -62,14 +80,17 @@
                         <div class="container">
                             <div class="form-group">
                                 <label for="name">Название организации</label>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="Суперкалькулятор-3000">
+                                <input type="text" class="form-control" id="name" name="name"
+                                       placeholder="Суперкалькулятор-3000">
                             </div>
                             <div class="form-group">
                                 <label for="description">Описание</label>
                                 <textarea name="description" class="form-control" id="description" rows="3"
                                           placeholder="Выпускаем лучшие калькуляторы в России. Главный офиис в Москве"></textarea>
                             </div>
-                            <button type="button" id="create_organization_button" class="btn btn-primary">Отправить заявку</button>
+                            <button type="button" id="create_organization_button" class="btn btn-primary">Отправить
+                                заявку
+                            </button>
                         </div>
                     </div>
                 </form>
