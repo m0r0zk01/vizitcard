@@ -1,19 +1,39 @@
 class object {
     constructor(obj) {
-        this.obj = obj;
-        this.width = obj.width;
-        this.height = obj.height;
         this.x1 = 0;
         this.y1 = 0;
         this.x2 = obj.width;
         this.y2 = obj.height;
+        this.width = obj.width;
+        this.height = obj.height;
         this.z = max_z;
         this.isDragging = false;
         this.isResizing = false;
         this.resizeType = -1;
-        max_z += 1;
     }
 }
+
+class Text extends object {
+    constructor(obj) {
+        super(obj);
+        this.text = obj.text;
+        this.font = obj.font;
+        this.size = obj.size;
+        this.color = obj.color;
+        this.bold = obj.bold;
+        this.cursive = obj.cursive;
+        this.underline = obj.underline;
+    }
+}
+
+class Img extends object {
+    constructor(obj) {
+        super(obj);
+        this.img = obj;
+        this.originalPropotion = obj.height / obj.width;
+    }
+}
+
 
 let canvas, context,
     canvasWidth = 800, canvasHeight = 800,
@@ -32,8 +52,6 @@ function init() {
     canvas.height = canvasHeight;
     canvas.style.background = "#444444";
 
-    console.log('here');
-
     [...document.querySelectorAll('canvas')].forEach(canvas => {
         canvas.addEventListener('mousemove', function (e) {
             offsetX = e.target.offsetLeft;
@@ -49,12 +67,12 @@ function init() {
 
 function myMove(e) {
     if (dragOK) {
-        let mx = parseInt(e.clientX - offsetX);
-        let my = parseInt(e.clientY - offsetY);
+        let mx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - offsetX;
+        let my = e.clientY + document.body.scrollTop + document.documentElement.scrollTop - offsetY;
 
         let dx = mx - startX;
         let dy = my - startY;
-
+        console.log(startX, mx);
         if (selected != null && objects[selected].isDragging) {
             objects[selected].x1 += dx;
             objects[selected].y1 += dy;
@@ -102,14 +120,16 @@ function myUp(e) {
     dragOK = false;
     for (let i = 0; i < objects.length; i++) {
         objects[i].isDragging = false;
+        objects[i].isResizing = false;
     }
 }
 
 function myDown(e) {
-    let mx = parseInt(e.clientX - offsetX);
-    let my = parseInt(e.clientY - offsetY);
-    dragOK = true;
+    let mx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - offsetX;
+    let my = e.clientY + document.body.scrollTop + document.documentElement.scrollTop - offsetY;
 
+    dragOK = true;
+    console.log('down', mx, my);
     let clicked = null;
     for (let i = 0; i < objects.length; i++) {
         if (mx > objects[i].x1 && mx < objects[i].x2 && my > objects[i].y1 && my < objects[i].y2) {
@@ -150,7 +170,7 @@ function myDown(e) {
     draw();
 }
 
-function draw_squares(img) {
+function drawSquares(img) {
     context.fillStyle = "#23FFCB";
     context.fillRect(img.x1 - 5, img.y1 - 5, 5, 5);
     context.fillRect(img.x2, img.y1 - 5, 5, 5);
@@ -158,17 +178,18 @@ function draw_squares(img) {
     context.fillRect(img.x1 - 5, img.y2, 5, 5);
 }
 
-function isImage(i) {
-    return i instanceof HTMLImageElement;
+function drawImage(e) {
+    context.drawImage(e.img, e.x1, e.y1, e.width, e.height);
 }
 
-function draw_img(e) {
-    context.drawImage(e.obj, e.x1, e.y1, e.width, e.height);
-}
-
-function draw_text() {
-    context.font = "30px Arial";
-    context.fillText("hello", 10, 50);
+function drawText(e) {
+    context.font = e.size + ' ' + e.font;
+    context.fillStyle = e.color;
+    e.width = context.measureText(e.text).width;
+    e.height = parseInt(e.size.match(/\d+/), 10);
+    e.x2 = e.x1 + e.width;
+    e.y2 = e.y1 + e.height;
+    context.fillText(e.text, e.x1, e.y2);
 }
 
 function draw() {
@@ -183,30 +204,24 @@ function draw() {
     });
 
     for (let i = 0; i < objects.length; i++) {
-        if (i === selected)
-            draw_squares(objects[i]);
-        if (isImage(objects[i].obj))
-            draw_img(objects[i]);
+        if (objects[i].constructor.name === 'Img') {
+            drawImage(objects[i]);
+            if (i === selected)
+                drawSquares(objects[i]);
+        }
+        else {
+            drawText(objects[i]);
+        }
     }
-    draw_text();
 }
 
-function addObject(obj) {
-    objects.push(new object(obj));
+function addImage(img) {
+    objects.push(new Img(img));
     max_z += 1;
 }
 
-$('#upload_image_btn').on('click', () => {
-    console.log('loading');
-    let file = $('#upload_image').prop('files')[0];
-    let reader = new FileReader();
-    reader.onload = function (e) {
-        let img = new Image();
-        img.src = e.target.result;
-        img.onload = function (i) {
-            addObject(i.target);
-            draw();
-        };
-    };
-    reader.readAsDataURL(file);
-});
+function addText(text) {
+    let a = new Text(text);
+    objects.push(a);
+    max_z += 1;
+}

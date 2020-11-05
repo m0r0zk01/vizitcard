@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import permissions, status
+from scripts.validators import *
 
 
 def get_context(request):
@@ -30,15 +31,12 @@ def register(request):
     password = request.POST['password']
     confirm_password = request.POST['confirm_password']
     email = request.POST['email']
-    errors = {'username': [], 'password': [], 'email': [], 'confirm': []}
-    if User.objects.filter(username=username).count():
-        errors['username'].append('Имя занято')
+    errors = {'username': validate_username(username, True) or [],
+              'password': validate_password(password, True) or [],
+              'email': [],
+              'confirm': []}
     if User.objects.filter(email=email).count():
         errors['email'].append('Почта занята')
-    if not (5 <= len(username) <= 20):
-        errors['username'].append('Длина имени от 5 до 20 символов')
-    if not (8 <= len(password) <= 30):
-        errors['password'].append('Длина пароля от 8 до 30 символов')
     if password != confirm_password:
         errors['confirm'].append('Пароли не совпадают')
 
@@ -59,7 +57,7 @@ def register(request):
     return Response(b'', status=200)
 
 
-def validate_user(request, token):
+def activate_user(request, token):
     try:
         token_obj = Token.objects.get(token=token, token_type='activation')
     except Token.DoesNotExist:
@@ -102,6 +100,9 @@ def new_password(request, token):
         user = token_obj.user
         if password != confirm:
             return HttpResponse('Пароли не совпадают')
+        error = validate_password(password)
+        if error:
+            return HttpResponse(error)
         user.set_password(password)
         user.save()
         token_obj.delete()
@@ -125,6 +126,7 @@ def login_view(request):
     return Response(b'', status=200)
 
 
+@login_required()
 @api_view(['POST'])
 def change_profile(request):
     first_name = request.POST['first_name']
@@ -153,10 +155,10 @@ def change_profile(request):
         fs.save(avatar.name, avatar)
         user.avatar = 'img/avatars/' + avatar.name
     if user.check_password(password) and new:
-        if not (8 <= len(new) <= 30):
-            error = 'Длина пароля от 8 до 30 символов'
-        else:
-            user.set_password(new)
+        error = validate_password(new)
+        if error:
+            return Response(error, status=400)
+        user.set_password(new)
     elif password and not user.check_password(password):
         error = 'Неправильный пароль'
     user.save()
@@ -195,9 +197,7 @@ def add_user_to_organization(user_id, organization_id):
         worker = Worker(user=user)
         worker.save()
         user.worker = worker
-    print(user, user.worker, org)
     user.worker.org = org
-    print(user.worker)
     user.worker.save()
     user.save()
 
@@ -256,4 +256,12 @@ def delete_organization(request):
     pk = request.POST.get('id', None)
     if not pk:
         return Response('id не указан', status=400)
-
+    try:
+        org = Organization.objects.get(id=pk)
+    except Organization.DoesNotExist:
+        return Response('Неправильный id', status=400)
+    if org.creator == request.user:
+        print(org)
+        org.delete()
+        return Response(status=200)
+    return Response('Вы не являетесь создателем организации', status=200)

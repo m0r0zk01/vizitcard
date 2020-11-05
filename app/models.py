@@ -25,7 +25,7 @@ class Card(models.Model):
 
 
 class Organization(models.Model):
-    creator = models.OneToOneField(User, on_delete=models.CASCADE)
+    creator = models.OneToOneField(User, null=True, on_delete=models.PROTECT)
     name = models.TextField()
     description = models.TextField()
     activated = models.BooleanField(default=False)
@@ -36,7 +36,7 @@ class Organization(models.Model):
 class Worker(models.Model):
     position = models.TextField(default="", editable=False)
     work_card = models.OneToOneField(Card, null=True, default=None, on_delete=models.SET_NULL)
-    org = models.OneToOneField(Organization, null=True, default=None, on_delete=models.CASCADE)
+    org = models.OneToOneField(Organization, null=True, default=None, on_delete=models.SET_NULL)
 
 
 class Token(models.Model):

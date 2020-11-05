@@ -62,7 +62,6 @@
                     error: function (data) {
                         let arr = ['username', 'password', 'email', 'confirm'];
                         data = data['responseJSON'];
-                        console.log(data);
                         arr.forEach((el) => {
                             let error_str = '';
                             data[el].forEach((e) => {
