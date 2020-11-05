@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from scripts.token_generator import generate_token
 from datetime import datetime
-from vizitcard.settings import STATIC_ROOT
+import os
 
 
 class User(AbstractUser):
@@ -21,14 +21,18 @@ class Card(models.Model):
     vk = models.TextField()
     whats_app = models.TextField()
     telephone = models.TextField()
-    url = models.CharField(max_length=30)
-    serialized_array = models.TextField()
+    url = models.CharField(max_length=30, unique=True)
+    serialized_array = models.TextField(default='[]')
 
 
-class File(models.Model):
-    card = models.OneToOneField(Card, on_delete=models.CASCADE)
-    path = models.FileField()
-    icon = models.FileField()
+def get_upload_path(self, filename):
+    print(f'/static/img/cards/{self.card.id}/{filename}')
+    return f'/static/img/cards/{self.card.id}/'
+
+
+class CardFile(models.Model):
+    card = models.ForeignKey(Card, on_delete=models.CASCADE)
+    file = models.FileField(upload_to='static/img/cards/')
 
 
 class Organization(models.Model):

@@ -11,18 +11,14 @@ from app.models import *
 from datetime import datetime, timedelta
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.core.files import File
 from rest_framework import permissions, status
 from scripts.validators import *
-
-
-def get_context(request):
-    return {
-        'user': request.user
-    }
+import json
 
 
 def index(request):
-    return render(request, 'index.html', context=get_context(request))
+    return render(request, 'index.html', {'user': request.user, 'cards': Card.objects.filter(creator=request.user) if not request.user.is_anonymous else []})
 
 
 @api_view(['POST'])
@@ -267,13 +263,38 @@ def delete_organization(request):
     return Response('Вы не являетесь создателем организации', status=200)
 
 
-@api_view(['POST'])
+def card(request, url):
+    try:
+        card_obj = Card.objects.get(url=url)
+    except Card.DoesNotExist:
+        return HttpResponse('Визитка не найдена')
+    return render(request, 'card.html', {'user': request.user, 'card': card_obj})
+
+
 @login_required()
+@api_view(['POST'])
 def create_card(request):
-    print(request.POST)
+    name = request.POST.get('card_name', None)
+    if name is None:
+        return Response('Имя карточки не указано', status=400)
+    description = request.POST.get('card_description')
+    serialized_array = request.POST.get('serializedCard', '[]')
+    url = request.POST.get('url', None)
+    if not url:
+        url = generate_token()[:5]
+        while Card.objects.filter(url=url).count():
+            url = generate_token()[:5]
+    elif Card.objects.filter(url=url).count():
+        return Response('Ссылка уже занята', status=400)
+    new = Card(creator=request.user, name=name, description=description, url=url, serialized_array=serialized_array)
+    new.save()
+    for name, file in request.FILES.items():
+        CardFile(card=new, file=File(file)).save()
     return Response(status=200)
 
 
 @login_required()
 def new_card(request):
     return render(request, 'new_card.html')
+
+# 300 lines :)

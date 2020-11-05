@@ -6,9 +6,10 @@
 
     <div class="container d-flex mx-auto mt-2" style="flex-direction: column">
         <div class="text lead">
-            <p>Создание новой визитки</p>
+            <h2>Создание новой визитки</h2>
         </div>
-        <div style="max-width: 300px; padding-bottom: 40px">
+
+        <div style="max-width: 300px; padding-bottom: 40px; padding-top: 40px">
             <input class="form-control" id="card_name" placeholder="Имя карточки" required>
         </div>
 
@@ -28,8 +29,8 @@
                 <button type="button" id="add_text_btn" class="btn btn-primary">Добавить текст</button>
             </div>
         </form>
-        <canvas id="editor" class="mt-3" style="max-width: 800px; height: auto"></canvas>
-        <div style="max-width: 800px">
+        <canvas id="editor" class="mt-3" style="max-width: 1000px; height: auto"></canvas>
+        <div style="max-width: 1000px">
             <div class="row pt-4">
                 <label for="description">Текст визитки</label>
                 <textarea name="description" id="description" class="form-control"></textarea>
@@ -104,7 +105,7 @@
                 draw();
             });
 
-            let files = [];
+            var files = [];
             $('#upload_file_btn').on('click', () => {
                 let file = $('#upload_file').prop('files')[0];
                 let name = $('#new_filename').val();
@@ -127,15 +128,44 @@
                 });
             }
 
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            const csrftoken = getCookie('csrftoken');
+
             $('#card_btn').on('click', () => {
                 let formData = new FormData(document.getElementById('save_card_form'));
-                formData.append('name', $('#card_name').val());
-                formData.append('files', files);
-                formData.append('description', $('#description').val());
-                formData.append('serializedCard', JSON.stringify(objects));
-                console.log(formData);
+                files.forEach((e) => {
+                    formData.append(e.name, e);
+                });
+                formData.append('card_name', $('#card_name').val());
+                formData.append('card_description', $('#description').val());
+
+                let serialized = JSON.stringify(objects);
+                objects.forEach(e => {
+                   if (e.constructor.name === 'Img')
+                       serialized = serialized.replace('"img":{}', '"img":"' + e.img.src + '"');
+                });
+
+                formData.append('serializedCard', serialized);
                 $.ajax({
                     type: 'POST',
+                    beforeSend: function (request) {
+                        request.setRequestHeader('X-CSRFToken', csrftoken);
+                    },
                     url: '/create_card',
                     data: formData,
                     processData: false,
@@ -144,9 +174,10 @@
                         window.location.reload(false);
                     },
                     error: (data) => {
+                        console.log(data);
                         $('#card_error').val(data['responseJSON']);
                     }
-                })
+                });
             });
         });
 

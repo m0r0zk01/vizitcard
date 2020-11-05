@@ -36,7 +36,7 @@ class Img extends object {
 
 
 let canvas, context,
-    canvasWidth = 800, canvasHeight = 800,
+    canvasWidth = 1000, canvasHeight = 1000,
     minWidth = 50, minHeight = 50,
     objects = [],
     dragOK = false,
