@@ -265,3 +265,15 @@ def delete_organization(request):
         org.delete()
         return Response(status=200)
     return Response('Вы не являетесь создателем организации', status=200)
+
+
+@api_view(['POST'])
+@login_required()
+def create_card(request):
+    print(request.POST)
+    return Response(status=200)
+
+
+@login_required()
+def new_card(request):
+    return render(request, 'new_card.html')

@@ -21,7 +21,14 @@ class Card(models.Model):
     vk = models.TextField()
     whats_app = models.TextField()
     telephone = models.TextField()
-    url = models.TextField()
+    url = models.CharField(max_length=30)
+    serialized_array = models.TextField()
+
+
+class File(models.Model):
+    card = models.OneToOneField(Card, on_delete=models.CASCADE)
+    path = models.FileField()
+    icon = models.FileField()
 
 
 class Organization(models.Model):

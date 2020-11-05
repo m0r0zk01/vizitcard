@@ -4,9 +4,9 @@
     <div>
         <div class="avatar">
             {% if user.avatar %}
-                <a href="profile"><img src="{% static user.avatar %}" alt="avatar"></a>
+                <a href="profile"><img draggable="false" src="{% static user.avatar %}" alt="avatar"></a>
             {% else %}
-                <a href="profile"><img src="{% static "/img/avatars/default_avatar.png" %}" alt="avatar"></a>
+                <a href="profile"><img draggable="false" src="{% static "/img/avatars/default_avatar.png" %}" alt="avatar"></a>
             {% endif %}
             <a href="profile">Профиль</a>
         </div>

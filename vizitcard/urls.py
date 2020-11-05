@@ -36,5 +36,7 @@ urlpatterns = [
     path('request_create_organization', request_create_organization),
     path('activate_organization', activate_organization),
     path('delete_organization', delete_organization),
+    path('create_card', create_card),
+    path('new_card', new_card),
     path('admin', admin)
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

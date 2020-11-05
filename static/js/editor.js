@@ -72,7 +72,6 @@ function myMove(e) {
 
         let dx = mx - startX;
         let dy = my - startY;
-        console.log(startX, mx);
         if (selected != null && objects[selected].isDragging) {
             objects[selected].x1 += dx;
             objects[selected].y1 += dy;
@@ -129,7 +128,6 @@ function myDown(e) {
     let my = e.clientY + document.body.scrollTop + document.documentElement.scrollTop - offsetY;
 
     dragOK = true;
-    console.log('down', mx, my);
     let clicked = null;
     for (let i = 0; i < objects.length; i++) {
         if (mx > objects[i].x1 && mx < objects[i].x2 && my > objects[i].y1 && my < objects[i].y2) {
