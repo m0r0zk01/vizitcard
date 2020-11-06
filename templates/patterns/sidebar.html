@@ -1,0 +1,28 @@
+{% load static %}
+
+<nav class="menu" tabindex="0">
+    <div>
+        <div class="avatar">
+            {% if user.avatar %}
+                <a href="profile"><img draggable="false" src="{% static user.avatar %}" alt="avatar"></a>
+            {% else %}
+                <a href="profile"><img draggable="false" src="{% static "/../../media/img/avatars/default_avatar.png" %}" alt="avatar"></a>
+            {% endif %}
+            <a href="profile">Профиль</a>
+        </div>
+    </div>
+    <div class="menu-el">
+        <a href="/">Визитки</a>
+    </div>
+    <div class="menu-el">
+        <a href="organizations">Организации</a>
+    </div>
+    {% if user.is_superuser %}
+        <div class="menu-el">
+            <a href="admin">Админ</a>
+        </div>
+    {% endif %}
+    <div class="menu-el">
+        <a href="logout">Выйти</a>
+    </div>
+</nav>

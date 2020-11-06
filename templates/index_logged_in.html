@@ -1,0 +1,41 @@
+{% extends 'patterns/base.html' %}
+
+{% block content %}
+
+    {% include 'patterns/sidebar.html' %}
+
+    {% if not cards %}
+        <div class="text lead" style="text-align: center">
+            <p>У вас еще нет ни одной карточки</p>
+            <p>Нажмите <a href="new_card">сюда</a>, чтобы создать свою первую визитку</p>
+        </div>
+    {% else %}
+        <div class="text lead" style="text-align: center">
+            <p>Ваши визитки:</p>
+        </div>
+        <div class="container">
+            <div class="row request_info" style="background-color: #1A2226">
+                <div class="col-3">
+                    <p>Название</p>
+                </div>
+                <div class="col-9">
+                    <p>Ссылка</p>
+                </div>
+            </div>
+
+            {% for card in cards %}
+                <div class="row request_info mt-2">
+                    <div class="col-3">
+                        {{ card.name }}
+                    </div>
+                    <div class="col-9">
+                        <a href="card/{{ card.url }}">Ссылка</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="text lead" style="text-align: center">
+            <p>Нажмите <a href="new_card">сюда</a>, чтобы создать новую визитку</p>
+        </div>
+    {% endif %}
+{% endblock %}

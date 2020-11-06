@@ -1,0 +1,26 @@
+{% extends 'patterns/base.html' %}
+
+{% block content %}
+
+    {% include 'patterns/sidebar.html' %}
+
+    <div class="container d-flex mx-auto mt-2" style="flex-direction: column">
+        <div class="text lead">
+            <h2>Визитка {{ card.name }}. Создатель: <a href="../../profile/{{ card.creator.username }}">{{ card.creator.username }}</a></h2>
+        </div>
+        <img src="../media/{{ card.image }}">
+        <div class="text lead">
+            <b>Описание:</b>
+            {{ card.description }}
+        </div>
+
+        <div class="text lead">
+            <p>Прикрепленные к визитке файлы:</p>
+        </div>
+        {% for file in files %}
+            <a href="/media/{{ file.file }}">{{ file.file }}</a>
+        {% endfor %}
+    </div>
+
+    <input type="file" name="card" id="kek" hidden>
+{% endblock %}

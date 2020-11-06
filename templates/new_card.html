@@ -1,0 +1,215 @@
+{% extends 'patterns/base.html' %}
+
+{% block content %}
+
+    {% include 'patterns/sidebar.html' %}
+
+    <div class="container d-flex mx-auto mt-2" style="flex-direction: column">
+        <div class="text lead">
+            <h2>Создание новой визитки</h2>
+        </div>
+
+        <div style="max-width: 300px; padding-bottom: 40px; padding-top: 40px">
+            <input class="form-control" id="card_name" placeholder="Имя карточки" required>
+        </div>
+
+        <form class="row">
+            <div class="form-group col-5">
+                <input type="file" name="upload_image" id="upload_image">
+            </div>
+            <div class="col-7">
+                <button type="button" id="upload_image_btn" class="btn btn-primary">Добавить изображение</button>
+            </div>
+        </form>
+        <form class="row">
+            <div class="form-group col-5">
+                <input type="text" class="form-control" name="text" placeholder="Текст..." id="text" required>
+            </div>
+            <div class="col-7">
+                <button type="button" id="add_text_btn" class="btn btn-primary">Добавить текст</button>
+            </div>
+        </form>
+        <form class="row">
+            <label>Для добавления кода заполните поле с ссылкой ниже</label>
+            <button type="button" id="add_qr" class="btn btn-primary">Добавить QR-code</button>
+            <div id="qrcode" hidden>
+
+            </div>
+        </form>
+        <canvas id="editor" class="mt-3" style="max-width: 1000px; height: auto"></canvas>
+        <div style="max-width: 1000px">
+            <div class="row pt-4">
+                <label for="description">Текст визитки</label>
+                <textarea name="description" id="description" class="form-control"></textarea>
+            </div>
+
+            <div id="attached_files">
+
+            </div>
+
+            <div class="row mt-4">
+                <div class="form-group col-3">
+                    <input type="file" name="upload_file" id="upload_file">
+                </div>
+                <div class="form-group col-5">
+                    <input type="text" class="form-control" name="new_filename" id="new_filename"
+                           placeholder="Имя файла(с расширением)">
+                </div>
+                <div class="col-4">
+                    <button type="button" id="upload_file_btn" class="btn btn-primary">Прикрепить файл к визитке
+                    </button>
+                </div>
+            </div>
+
+            <hr/>
+            <form class="row" style="margin-top: 40px" id="save_card_form">
+                {% csrf_token %}
+                <div class="form-group" style="max-width: 300px">
+                    <div class="d-flex">
+                        <input type="text" name="url" class="form-control" id="url" placeholder="Ссылка на визитку">
+                        <button type="button" id="card_btn" class="btn btn-success my-auto ml-2"
+                                style="min-width: 200px">Создать визитку
+                        </button>
+                    </div>
+                    <p class="text-danger" id="card_error" style="height: 10px"></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    <input type="file" name="card" id="kek" hidden>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(() => {
+            init();
+            $('#upload_image_btn').on('click', () => {
+                let file = $('#upload_image').prop('files')[0];
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    let img = new Image();
+                    img.src = e.target.result;
+                    img.onload = function (i) {
+                        addImage(i.target);
+                        draw();
+                    };
+                };
+                reader.readAsDataURL(file);
+            });
+
+            $('#add_text_btn').on('click', () => {
+                let input = $('#text');
+                let obj = {
+                    text: input.val(),
+                    color: '#000000',
+                    font: 'Arial',
+                    size: '30pt',
+                    bold: false,
+                    cursive: false,
+                    underline: false,
+                };
+                input.val('');
+                addText(obj);
+                draw();
+            });
+
+            var files = [];
+            $('#upload_file_btn').on('click', () => {
+                let file = $('#upload_file').prop('files')[0];
+                let name = $('#new_filename').val();
+                Object.defineProperty(file, 'name', {
+                    writable: true,
+                    value: name ? name : file.name,
+                });
+                files.push(file);
+
+                if (file) {
+                    $('#attached_files').append(`<div class="mt-2 attached_file"><div id=${files.length - 1} style="display: inline-block;">${file.name}</div><button style="display: inline-block;" class="btn btn-danger ml-2 remove_file">Удалить</button></div>`);
+                    addListeners();
+                }
+            });
+
+            function addListeners() {
+                $('.remove_file').on('click', (e) => {
+                    files = files.splice(e.id, 1);
+                    e.target.parentElement.remove();
+                });
+            }
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            const csrftoken = getCookie('csrftoken');
+
+            $('#card_btn').on('click', () => {
+                let formData = new FormData(document.getElementById('save_card_form'));
+
+                files.forEach((e) => {
+                    formData.append(e.name, e);
+                });
+                formData.append('card_name', $('#card_name').val());
+                formData.append('card_description', $('#description').val());
+
+                let serialized = JSON.stringify(objects);
+                objects.forEach(e => {
+                    if (e.constructor.name === 'Img')
+                        serialized = serialized.replace('"img":{}', '"img":"' + e.img.src + '"');
+                });
+                formData.append('serializedCard', serialized);
+
+                fetch(document.getElementById('editor').toDataURL())
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const file = new File([blob], "card.png", {
+                            type: 'image/png'
+                        });
+                        formData.append('card', file);
+                        $.ajax({
+                            type: 'POST',
+                            beforeSend: function (request) {
+                                request.setRequestHeader('X-CSRFToken', csrftoken);
+                            },
+                            url: '/create_card',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: () => {
+                                window.location.reload(false);
+                            },
+                            error: (data) => {
+                                $('#card_error').val(data['responseJSON']);
+                            }
+                        });
+                    });
+            });
+            $('#add_qr').on('click', () => {
+                let qrcode = new QRCode(document.getElementById("qrcode"), {
+                    text: '127.0.0.1/card/' + $('#url').val(),
+                    width: 500,
+                    height: 500,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                document.getElementById('qrcode').lastChild.onload = function () {
+                    addImage(document.getElementById('qrcode').lastChild);
+                    draw();
+                };
+            });
+        });
+
+    </script>
+{% endblock %}
