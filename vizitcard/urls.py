@@ -40,5 +40,6 @@ urlpatterns = [
     path('card/<str:url>', card),
     path('new_card', new_card),
     path('download/<str:path>', download),
-    path('admin', admin)
+    path('admin', admin),
+    path('send_activation_mail', send_activation_email)
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -51,7 +51,7 @@ class Token(models.Model):
     token_type = models.CharField(max_length=30, default='activation')
     creation_date = models.DateTimeField(default=timezone.now)
     lifetime = models.IntegerField(default=1)
-    user = models.OneToOneField(to=User, blank=True, null=True, on_delete=models.PROTECT)
+    user = models.ForeignKey(to=User, blank=True, null=True, on_delete=models.PROTECT)
 
 
 class OrganizationToken(Token):

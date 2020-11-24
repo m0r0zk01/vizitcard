@@ -47,7 +47,7 @@ def register(request):
     print('saved')
 
     token = Token.objects.create(user=user, token_type="activation")
-    text = f'Hey, this is vizitcard bot! Go to this link: 127.0.0.1:8000/activate/{token.token} to activate your account'
+    text = f'Hey, this is vizitcard bot! Go to this <a href="http://127.0.0.1:8000/activate/{token.token}"> link </a> to activate your account'
     send_mail('vizitcard', '', None, [email], html_message=text)
     token.save()
 
@@ -311,4 +311,22 @@ def download(request, path):
     return Response(file, status=200)
 
 
-# 310 lines :)
+@api_view(['POST'])
+def send_activation_email(request):
+    print(request.POST)
+    usr = request.POST.get('username')
+    print(usr)
+    try:
+        user = User.objects.get(Q(username=usr) | Q(email=usr))
+    except User.DoesNotExist:
+        return Response('Такого рользователя не существует', status=400)
+    print(123)
+    if user.is_active:
+        return Response('Пользователь уже активирован', status=400)
+    print(456)
+    token = Token.objects.create(user=user, token_type="activation")
+    text = f'Hey, this is vizitcard bot! Go to this <a href="http://127.0.0.1:8000/activate/{token.token}"> link </a> to activate your account'
+    send_mail('vizitcard', '', None, [user.email], html_message=text)
+    token.save()
+
+    return Response(b'', status=200)
