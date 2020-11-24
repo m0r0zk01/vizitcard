@@ -16,9 +16,16 @@
     {% include 'patterns/header.html' %}
 
     <div class="container">
-        <div class="row">
-            <div class="text">
-                {% lorem 3 %}
+        <div class="text-justify">
+            <div class="row">
+                <h3>VIZITCARD - сервис для создания виртуальных визиток.</h3>
+            </div>
+            <hr>
+            <div class="row">
+                С помощтю этого сервиса можно удобно обмениваться контактами и создавать страницы-визитки, прикреплять к ним необходимую информацию и файлы
+            </div>
+            <div class="row">
+                Просто оставляйте ссылку или QR-код со ссылкой и любой сможет получить доступ к вашей карточке
             </div>
         </div>
     </div>
@@ -45,8 +52,6 @@
             });
         }
 
-        swap_to_log();
-
         function register_listener() {
             $("#register_button").on("click", function () {
                 let formData = new FormData(document.getElementById('registration_form'));
@@ -62,7 +67,6 @@
                     error: function (data) {
                         let arr = ['username', 'password', 'email', 'confirm'];
                         data = data['responseJSON'];
-                        console.log(data);
                         arr.forEach((el) => {
                             let error_str = '';
                             data[el].forEach((e) => {
@@ -89,8 +93,26 @@
                         window.location.reload(false);
                     },
                     error: function (data) {
-                        console.log(data);
-                        $('#login_error').text(data['responseJSON']);
+                        let err = document.getElementById('login_error');
+                        if (data['responseJSON'] === 'Неправильное имя пользователя или пароль') {
+                            err.innerText = data['responseJSON'];
+                            return;
+                        }
+
+                        err.innerHTML = data['responseJSON'] + '. Нажмите <a id="send" style="color:blue">здесь</a>, чтобы еще раз получить письмо для активации';
+
+                        $('#send').on('click', ()=> {
+                            let data = {username: formData.get('username')};
+                            console.log(data);
+                            $.ajax({
+                                url: '/send_activation_mail',
+                                data: data,
+                                type: 'POST',
+                                success: function () {
+                                    window.location.reload(false);
+                                },
+                            });
+                        });
                     }
                 });
             });
@@ -116,6 +138,13 @@
             location.hash = "#reg_form";
         });
 
-        register_listener()
+        window.onload = () => {
+            swap_to_log();
+            register_listener();
+            if (location.hash === '#log_form') {
+                console.log('b');
+                document.getElementById('swap_to_log').click();
+            }
+        };
     </script>
 {% endblock %}

@@ -25,7 +25,7 @@ urlpatterns = [
     path('register', register),
     path('login', login_view),
     path('logout', logout_view),
-    path('activate/<str:token>', validate_user),
+    path('activate/<str:token>', activate_user),
     path('profile', profile),
     path('profile/<str:username>', profile),
     path('forgot_password', forgot_password),
@@ -35,5 +35,11 @@ urlpatterns = [
     path('enter_organization', enter_organization),
     path('request_create_organization', request_create_organization),
     path('activate_organization', activate_organization),
-    path('admin', admin)
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('delete_organization', delete_organization),
+    path('create_card', create_card),
+    path('card/<str:url>', card),
+    path('new_card', new_card),
+    path('download/<str:path>', download),
+    path('admin', admin),
+    path('send_activation_mail', send_activation_email)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

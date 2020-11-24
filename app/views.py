@@ -6,22 +6,20 @@ from django.core.files.storage import FileSystemStorage
 from django.core.mail import send_mail
 from django.utils import timezone
 from django.db.models import Q
-from vizitcard.settings import EMAIL_HOST_USER
+from vizitcard.settings import EMAIL_HOST_USER, BASE_DIR
 from app.models import *
 from datetime import datetime, timedelta
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.core.files import File
 from rest_framework import permissions, status
-
-
-def get_context(request):
-    return {
-        'user': request.user
-    }
+from scripts.validators import *
+import mimetypes
+import json
 
 
 def index(request):
-    return render(request, 'index.html', context=get_context(request))
+    return render(request, 'index.html', {'user': request.user, 'cards': Card.objects.filter(creator=request.user) if not request.user.is_anonymous else []})
 
 
 @api_view(['POST'])
@@ -30,15 +28,12 @@ def register(request):
     password = request.POST['password']
     confirm_password = request.POST['confirm_password']
     email = request.POST['email']
-    errors = {'username': [], 'password': [], 'email': [], 'confirm': []}
-    if User.objects.filter(username=username).count():
-        errors['username'].append('Имя занято')
+    errors = {'username': validate_username(username, True) or [],
+              'password': validate_password(password, True) or [],
+              'email': [],
+              'confirm': []}
     if User.objects.filter(email=email).count():
         errors['email'].append('Почта занята')
-    if not (5 <= len(username) <= 20):
-        errors['username'].append('Длина имени от 5 до 20 символов')
-    if not (8 <= len(password) <= 30):
-        errors['password'].append('Длина пароля от 8 до 30 символов')
     if password != confirm_password:
         errors['confirm'].append('Пароли не совпадают')
 
@@ -52,14 +47,14 @@ def register(request):
     print('saved')
 
     token = Token.objects.create(user=user, token_type="activation")
-    text = f'Hey, this is vizitcard bot! Go to this link: 127.0.0.1:8000/activate/{token.token} to activate your account'
+    text = f'Hey, this is vizitcard bot! Go to this <a href="http://127.0.0.1:8000/activate/{token.token}"> link </a> to activate your account'
     send_mail('vizitcard', '', None, [email], html_message=text)
     token.save()
 
     return Response(b'', status=200)
 
 
-def validate_user(request, token):
+def activate_user(request, token):
     try:
         token_obj = Token.objects.get(token=token, token_type='activation')
     except Token.DoesNotExist:
@@ -102,6 +97,9 @@ def new_password(request, token):
         user = token_obj.user
         if password != confirm:
             return HttpResponse('Пароли не совпадают')
+        error = validate_password(password)
+        if error:
+            return HttpResponse(error)
         user.set_password(password)
         user.save()
         token_obj.delete()
@@ -125,6 +123,7 @@ def login_view(request):
     return Response(b'', status=200)
 
 
+@login_required()
 @api_view(['POST'])
 def change_profile(request):
     first_name = request.POST['first_name']
@@ -153,13 +152,15 @@ def change_profile(request):
         fs.save(avatar.name, avatar)
         user.avatar = 'img/avatars/' + avatar.name
     if user.check_password(password) and new:
-        if not (8 <= len(new) <= 30):
-            error = 'Длина пароля от 8 до 30 символов'
-        else:
-            user.set_password(new)
+        error = validate_password(new)
+        print(error)
+        if error:
+            return Response(error, status=400)
+        user.set_password(new)
     elif password and not user.check_password(password):
         error = 'Неправильный пароль'
     user.save()
+    print(error)
     return Response(b'' if not error else error, status=200)
 
 
@@ -195,9 +196,7 @@ def add_user_to_organization(user_id, organization_id):
         worker = Worker(user=user)
         worker.save()
         user.worker = worker
-    print(user, user.worker, org)
     user.worker.org = org
-    print(user.worker)
     user.worker.save()
     user.save()
 
@@ -256,4 +255,78 @@ def delete_organization(request):
     pk = request.POST.get('id', None)
     if not pk:
         return Response('id не указан', status=400)
+    try:
+        org = Organization.objects.get(id=pk)
+    except Organization.DoesNotExist:
+        return Response('Неправильный id', status=400)
+    if org.creator == request.user:
+        print(org)
+        org.delete()
+        return Response(status=200)
+    return Response('Вы не являетесь создателем организации', status=200)
 
+
+def card(request, url):
+    try:
+        card_obj = Card.objects.get(url=url)
+    except Card.DoesNotExist:
+        return HttpResponse('Визитка не найдена')
+    files = CardFile.objects.filter(card=card_obj)
+    return render(request, 'card.html', {'user': request.user, 'card': card_obj, 'files': files})
+
+
+@login_required()
+@api_view(['POST'])
+def create_card(request):
+    name = request.POST.get('card_name', None)
+    if name is None:
+        return Response('Имя карточки не указано', status=400)
+    description = request.POST.get('card_description')
+    serialized_array = request.POST.get('serializedCard', '[]')
+    image = request.FILES['card']
+    url = request.POST.get('url', None)
+    if not url:
+        url = generate_token()[:5]
+        while Card.objects.filter(url=url).count():
+            url = generate_token()[:5]
+    elif Card.objects.filter(url=url).count():
+        return Response('Ссылка уже занята', status=400)
+    new = Card(creator=request.user, name=name, description=description, url=url, serialized_array=serialized_array, image=File(image))
+    new.save()
+    for name, file in request.FILES.items():
+        CardFile(card=new, file=File(file)).save()
+    return Response(status=200)
+
+
+@login_required()
+def new_card(request):
+    return render(request, 'new_card.html')
+
+
+@api_view(['GET'])
+def download(request, path):
+    file_path = './static/img/cards/'
+    file = open(file_path + path, 'r')
+    print(file)
+    return Response(file, status=200)
+
+
+@api_view(['POST'])
+def send_activation_email(request):
+    print(request.POST)
+    usr = request.POST.get('username')
+    print(usr)
+    try:
+        user = User.objects.get(Q(username=usr) | Q(email=usr))
+    except User.DoesNotExist:
+        return Response('Такого рользователя не существует', status=400)
+    print(123)
+    if user.is_active:
+        return Response('Пользователь уже активирован', status=400)
+    print(456)
+    token = Token.objects.create(user=user, token_type="activation")
+    text = f'Hey, this is vizitcard bot! Go to this <a href="http://127.0.0.1:8000/activate/{token.token}"> link </a> to activate your account'
+    send_mail('vizitcard', '', None, [user.email], html_message=text)
+    token.save()
+
+    return Response(b'', status=200)

@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from scripts.token_generator import generate_token
 from datetime import datetime
-from vizitcard.settings import STATIC_ROOT
+import os
 
 
 class User(AbstractUser):
@@ -21,11 +21,18 @@ class Card(models.Model):
     vk = models.TextField()
     whats_app = models.TextField()
     telephone = models.TextField()
-    url = models.TextField()
+    url = models.CharField(max_length=30, unique=True)
+    serialized_array = models.TextField(default='[]')
+    image = models.FileField(upload_to='img/cards/cards/')
+
+
+class CardFile(models.Model):
+    card = models.ForeignKey(Card, on_delete=models.CASCADE)
+    file = models.FileField(upload_to='img/cards/')
 
 
 class Organization(models.Model):
-    creator = models.OneToOneField(User, on_delete=models.CASCADE)
+    creator = models.OneToOneField(User, null=True, on_delete=models.PROTECT)
     name = models.TextField()
     description = models.TextField()
     activated = models.BooleanField(default=False)
@@ -36,7 +43,7 @@ class Organization(models.Model):
 class Worker(models.Model):
     position = models.TextField(default="", editable=False)
     work_card = models.OneToOneField(Card, null=True, default=None, on_delete=models.SET_NULL)
-    org = models.OneToOneField(Organization, null=True, default=None, on_delete=models.CASCADE)
+    org = models.OneToOneField(Organization, null=True, default=None, on_delete=models.SET_NULL)
 
 
 class Token(models.Model):
@@ -44,7 +51,7 @@ class Token(models.Model):
     token_type = models.CharField(max_length=30, default='activation')
     creation_date = models.DateTimeField(default=timezone.now)
     lifetime = models.IntegerField(default=1)
-    user = models.OneToOneField(to=User, blank=True, null=True, on_delete=models.PROTECT)
+    user = models.ForeignKey(to=User, blank=True, null=True, on_delete=models.PROTECT)
 
 
 class OrganizationToken(Token):

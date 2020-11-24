@@ -59,7 +59,7 @@
                 {% if user == profile_owner %}
                     <div class="form-group">
                         <label for="exampleFormControlFile1">Загрузить аватар</label>
-                        <input name="avatar" type="file" class="form-control-file" id="avatar" readonly>
+                        <input name="avatar" type="file" class="form-control-file" id="avatar" disabled readonly>
                     </div>
                     <div class="container">
                         <div class="row">
@@ -82,6 +82,7 @@
     <script>
         $("#change_profile").on("click", function () {
             $('input[type=text], input[type=file], input[type=password], textarea').removeAttr('readonly');
+            $('#avatar').removeAttr('disabled');
             $('#save_changes').css('display', 'block');
         });
         $("#save_changes").on("click", function () {
@@ -92,8 +93,11 @@
                 type: 'POST',
                 processData: false,
                 contentType: false,
-                success: function () {
-                    window.location.reload(false);
+                success: function (data) {
+                    if (data.length)
+                        $('#change_password_error').text(data);
+                    else
+                        window.location.reload(false);
                 },
                 error: function (data) {
                     $('#change_profile_error').text(data['responseJSON']);

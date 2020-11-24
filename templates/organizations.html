@@ -6,24 +6,24 @@
 
     {% include 'patterns/sidebar.html' %}
 
-    <div class="container" id="form-width">
+    <div class="container" id="form-width" style="text-align: center">
         {% if worker and worker.org %}
             {% if worker.org.creator == user %}
-                <div class="row mx-auto lead">
-                    <p class="text-justify">Вы являетесь создателем организации &nbsp;</p>
-                    <p class="font-weight-bold">{{ worker.org.name }}</p>
-                    <p>!</p>
+                <div class="lead" style="text-align: center; display: inline-block">
+                    <p style="display: inline-block">Вы являетесь создателем организации &nbsp;</p>
+                    <p style="display: inline-block" class="font-weight-bold">{{ worker.org.name }}</p>
+                    <p style="display: inline-block">!</p>
                 </div>
                 {% if not worker.org.activated %}
-                    <div style="display: inline-block">
+                    <div style="display: inline-block; text-align: center">
                         <div class="text" style="display: inline-block">
                             <p class="text-justify">Ваша заявка отправлена и в скором времени будет рассмотрена
                                 модератором. Вы можете</p>
                         </div>
-                        <form style="display: inline-block">
+                        <form id="delete_request_form" style="display: inline-block">
                             {% csrf_token %}
                             <input type="text" name="id" value="{{ worker.org.id }}" hidden>
-                            <button type="button" class="btn btn-danger" style="display: inline-block">удалить</button>
+                            <button type="button" id="delete_request" class="btn btn-danger" style="display: inline-block">удалить</button>
                         </form>
                         <div class="text" style="display: inline-block">
                             <p class="text-justify">заявку</p>
@@ -36,7 +36,7 @@
                 </div>
             {% endif %}
         {% else %}
-            <div>
+            <div style="text-align: left">
                 <form id="enter_org_form" class="form-horizontal">
                     {% csrf_token %}
                     <div class="d-flex mx-auto" style="flex-direction: column">
@@ -121,6 +121,20 @@
                 error: function (data) {
                     $('#org_error').text(data['responseJSON']);
                 }
+            });
+        });
+
+        $("#delete_request").on("click", function () {
+           let formData = new FormData(document.getElementById('delete_request_form'));
+           $.ajax({
+                url: '/delete_organization',
+                data: formData,
+                type: 'POST',
+                processData: false,
+                contentType: false,
+                success: function () {
+                    window.location.reload(false);
+                },
             });
         });
     </script>
