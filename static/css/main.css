@@ -2,8 +2,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap');
 
+* {
+    margin: 0;
+    padding: 0;
+}
+
 html, body {
-    height: 100% !important;
+    min-height: 100% !important;
 }
 
 body {
@@ -47,10 +52,6 @@ main {
     width: calc(100% - 240px);
 }
 
-.overlay {
-
-}
-
 .overlay:after {
     content: "";
     position: absolute;
@@ -88,14 +89,10 @@ main {
 .menu {
     color: white;
     font-family: "Open Sans", Helvetica Neue, Helvetica, Arial, sans-serif;
-    float: left;
     background: #1A2226;
     width: 240px;
     position: absolute;
-    height: 100%;
-    top: 0;
-    left: 0;
-    bottom: 0;
+    min-height: 100%;
     z-index: 5;
     outline: none;
     display: flex;
