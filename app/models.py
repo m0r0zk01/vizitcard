@@ -43,7 +43,7 @@ class Organization(models.Model):
 class Worker(models.Model):
     position = models.TextField(default="", editable=False)
     work_card = models.OneToOneField(Card, null=True, default=None, on_delete=models.SET_NULL)
-    org = models.OneToOneField(Organization, null=True, default=None, on_delete=models.SET_NULL)
+    org = models.ForeignKey(Organization, null=True, default=None, on_delete=models.SET_NULL)
 
 
 class Token(models.Model):

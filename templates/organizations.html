@@ -29,10 +29,14 @@
                             <p class="text-justify">заявку</p>
                         </div>
                     </div>
+                {% else %}
+                    <div class="row">
+                        Код входа в организацию: {{ code.token }}
+                    </div>
                 {% endif %}
             {% else %}
-                <div class="row mx-auto lead">
-                    <p class="text-justify">Вы состоите в организации {{ woker.org.name }}!</p>
+                <div class="lead" style="text-align: center; display: inline-block">
+                    <p class="text-justify">Вы состоите в организации {{ worker.org.name }}!</p>
                 </div>
             {% endif %}
         {% else %}
@@ -66,7 +70,7 @@
                     {% csrf_token %}
                     <div class="d-flex mx-auto" style="flex-direction: column">
                         <div class="mx-auto lead">
-                            <p class="text-justify">Вы можете заполнить форму о регистрации Вашей организации, используя
+                            <p class="text-justify">Вы можете оставить заявку на регистрацию Вашей организации, используя
                                 форму ниже. Модератор рассмотрит заявку и свяжется с Вами</p>
                         </div>
                         <div class="container">
@@ -83,6 +87,7 @@
                             <button type="button" id="create_organization_button" class="btn btn-primary">Отправить
                                 заявку
                             </button>
+                            <p class="text-danger" id="create_org_error" style="height: 10px"></p>
                         </div>
                     </div>
                 </form>
@@ -103,6 +108,9 @@
                 contentType: false,
                 success: function () {
                     window.location.reload(false);
+                },
+                error: function(data) {
+                    $('#org_error').text(data['responseJSON']);
                 }
             });
         });
@@ -119,13 +127,14 @@
                     window.location.reload(false);
                 },
                 error: function (data) {
-                    $('#org_error').text(data['responseJSON']);
+                    $('#create_org_error').text(data['responseJSON']);
                 }
             });
         });
 
         $("#delete_request").on("click", function () {
            let formData = new FormData(document.getElementById('delete_request_form'));
+           formData.set('id', {{ worker.org.id }});
            $.ajax({
                 url: '/delete_organization',
                 data: formData,

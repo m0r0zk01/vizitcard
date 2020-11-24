@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from django.core.files import File
 from rest_framework import permissions, status
 from scripts.validators import *
+from random import randint
 import mimetypes
 import json
 
@@ -181,7 +182,14 @@ def profile(request, **kwargs):
 
 @login_required()
 def organizations(request):
-    return render(request, 'organizations.html', {'worker': User.objects.get(username=request.user.username).worker})
+    worker = User.objects.get(username=request.user.username).worker
+    context = {'worker': worker}
+    try:
+        if worker.org.creator == request.user:
+            context['code'] = OrganizationToken.objects.get(org=worker.org)
+    except:
+        pass
+    return render(request, 'organizations.html', context=context)
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -212,7 +220,7 @@ def enter_organization(request):
     except OrganizationToken.DoesNotExist:
         return Response('Неправильный код доступа', status=400)
     add_user_to_organization(request.user.id, code_obj.org.id)
-    return Response(status=200)
+    return Response(b'', status=200)
 
 
 @user_passes_test(lambda u: u.is_superuser, login_url='/')
@@ -245,6 +253,14 @@ def request_create_organization(request):
         return Response('Не указано название', status=400)
     new_org = Organization(name=name, description=description, creator=request.user)
     new_org.save()
+
+    tokens = OrganizationToken.objects.all()
+    new_token = randint(100000, 999999)
+    while new_token in tokens:
+        new_token = randint(100000, 999999)
+    new_org_token = OrganizationToken(org=new_org, token_type='org', lifetime=1e9, token=new_token)
+    new_org_token.save()
+
     add_user_to_organization(request.user.id, new_org.id)
     return Response(status=200)
 
@@ -252,6 +268,7 @@ def request_create_organization(request):
 @api_view(['POST'])
 @login_required()
 def delete_organization(request):
+    print(request.POST)
     pk = request.POST.get('id', None)
     if not pk:
         return Response('id не указан', status=400)
@@ -307,7 +324,6 @@ def new_card(request):
 def download(request, path):
     file_path = './static/img/cards/'
     file = open(file_path + path, 'r')
-    print(file)
     return Response(file, status=200)
 
 
