@@ -180,18 +180,6 @@ def profile(request, **kwargs):
     return render(request, 'profile.html', {'user': request.user, 'profile_owner': profile_owner})
 
 
-@login_required()
-def organizations(request):
-    worker = User.objects.get(username=request.user.username).worker
-    context = {'worker': worker}
-    try:
-        if worker.org.creator == request.user:
-            context['code'] = OrganizationToken.objects.get(org=worker.org)
-    except:
-        pass
-    return render(request, 'organizations.html', context=context)
-
-
 @user_passes_test(lambda u: u.is_superuser)
 def admin(request):
     return render(request, 'admin.html', context={'requests': Organization.objects.filter(activated=False)})
@@ -207,6 +195,31 @@ def add_user_to_organization(user_id, organization_id):
     user.worker.org = org
     user.worker.save()
     user.save()
+
+
+def delete_user_from_organization(user_id, organization_id):
+    user = User.objects.get(id=user_id)
+    org = Organization.objects.get(id=organization_id)
+    if org == user.worker.org:
+        user.worker.org = None
+    user.worker.save()
+    user.save()
+
+
+@login_required()
+def organizations(request):
+    worker = User.objects.get(username=request.user.username).worker
+    context = {'worker': worker}
+    if worker:
+        context['workers'] = [User.objects.get(worker=i) for i in Worker.objects.filter(org=worker.org)]
+        if worker.org:
+            context['org'] = worker.org
+    try:
+        if worker.org.creator == request.user:
+            context['code'] = OrganizationToken.objects.get(org=worker.org)
+    except:
+        pass
+    return render(request, 'organizations.html', context=context)
 
 
 @login_required()
@@ -262,6 +275,12 @@ def request_create_organization(request):
     new_org_token.save()
 
     add_user_to_organization(request.user.id, new_org.id)
+
+    user = User.objects.get(username=request.user)
+    user.worker.position = 'Глава'
+    user.worker.save()
+    user.save()
+
     return Response(status=200)
 
 
@@ -281,6 +300,44 @@ def delete_organization(request):
         org.delete()
         return Response(status=200)
     return Response('Вы не являетесь создателем организации', status=200)
+
+
+@api_view(['GET'])
+def show_organization(request, id):
+    try:
+        org = Organization.objects.get(id=id)
+    except Organization.DoesNotExist:
+        org = None
+    if org is None:
+        return Response('Не существует организации с таким id', status=400)
+    workers = [User.objects.get(worker=i) for i in Worker.objects.filter(org=org)]
+    return render(request, 'organization.html', {'org': org, 'workers': workers})
+
+
+@login_required()
+@api_view(['POST'])
+def delete_user_from_organization_view(request):
+    id = request.POST.get('id', None)
+    if id is None:
+        return Response('ID пользователя не указан', status=400)
+    user = User.objects.get(username=request.user)
+    if user.worker.org.creator == request.user:
+        u = User.objects.get(worker=Worker.objects.get(id=id))
+        delete_user_from_organization(u.id, user.worker.org.id)
+    return Response(b'', status=200)
+
+
+@api_view(['POST'])
+@login_required()
+def leave_organization(request):
+    user = User.objects.get(username=request.user)
+    if user and user.worker:
+        if user.worker.org.creator == user:
+            user.worker.org.delete()
+        user.worker.org = None
+        user.worker.save()
+        user.save()
+    return Response(b'', status=200)
 
 
 def card(request, url):
@@ -329,17 +386,13 @@ def download(request, path):
 
 @api_view(['POST'])
 def send_activation_email(request):
-    print(request.POST)
     usr = request.POST.get('username')
-    print(usr)
     try:
         user = User.objects.get(Q(username=usr) | Q(email=usr))
     except User.DoesNotExist:
         return Response('Такого рользователя не существует', status=400)
-    print(123)
     if user.is_active:
         return Response('Пользователь уже активирован', status=400)
-    print(456)
     token = Token.objects.create(user=user, token_type="activation")
     text = f'Hey, this is vizitcard bot! Go to this <a href="http://127.0.0.1:8000/activate/{token.token}"> link </a> to activate your account'
     send_mail('vizitcard', '', None, [user.email], html_message=text)

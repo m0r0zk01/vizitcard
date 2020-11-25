@@ -1,0 +1,66 @@
+<div class="container mx-auto" id="form-width-2">
+        <div class="text-justify lead">
+            Организация <b>{{ org.name }}</b>
+        </div>
+
+        <div class="text lead mt-3">Описание:</div>
+        <div class="pl-4 text-justify mt-1" style="outline: 1px solid #1A2226; background-color: #eccfb6">
+            {{ org.description }}
+        </div>
+        <hr/>
+        <div class="text-justify text pt-4 pb-3">
+            <h4>Члены организации:</h4>
+        </div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Никнейм</th>
+                <th>Имя</th>
+                <th>Фамилия</th>
+                <th>Должность</th>
+                {% if worker.org.creator == user %}
+                    <th>Действия</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for w in workers %}
+                <tr>
+                    <th scope="row"><a href="/profile/{{ w.username }}">{{ w.username }}</a></th>
+                    <td>
+                        {% if w.first_name %}
+                            {{ w.first_name }}
+                        {% else %}
+                            Не указано
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if w.last_name %}
+                            {{ w.last_name }}
+                        {% else %}
+                            Не указано
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if w.worker.position %}
+                            {{ w.worker.position }}
+                        {% else %}
+                            Не указано
+                        {% endif %}
+                    </td>
+                    {% if worker.org.creator == user %}
+                        <td>
+                            {% if w.id != user.id %}
+                                <form>
+                                    {% csrf_token %}
+                                    <input name="id" value="{{ w.id }}" hidden="hidden">
+                                    <button type="button" class="btn btn-danger delete_user" id="{{ w.id }}">Исключить</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>

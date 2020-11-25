@@ -43,14 +43,15 @@ let canvas, context,
     startX, startY,
     offsetX, offsetY,
     max_z = 0,
-    selected = null;
+    selected = null,
+    background = "#444444";
 
 function init() {
     canvas = document.getElementById("editor");
     context = canvas.getContext("2d");
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
-    canvas.style.background = "#444444";
+    //canvas.style.background = "#444444";
 
     [...document.querySelectorAll('canvas')].forEach(canvas => {
         canvas.addEventListener('mousemove', function (e) {
@@ -168,6 +169,11 @@ function myDown(e) {
     draw();
 }
 
+function drawBackground() {
+    context.fillStyle = background;
+    context.fillRect(0, 0, canvasWidth, canvasHeight);
+}
+
 function drawSquares(img) {
     context.fillStyle = "#23FFCB";
     context.fillRect(img.x1 - 5, img.y1 - 5, 5, 5);
@@ -192,6 +198,7 @@ function drawText(e) {
 
 function draw() {
     context.clearRect(0, 0, canvas.width, canvas.height);
+    drawBackground();
     objects.sort(function (a, b) {
         if (a.z < b.z)
             return -1;

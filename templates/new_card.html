@@ -4,7 +4,7 @@
 
     {% include 'patterns/sidebar.html' %}
 
-    <div class="container d-flex mx-auto mt-2" style="flex-direction: column">
+    <div class="container mx-auto mt-2" style="max-width: 1500px; flex-direction: column">
         <div class="text lead">
             <h2>Создание новой визитки</h2>
         </div>
@@ -30,13 +30,22 @@
             </div>
         </form>
         <form class="row">
-            <label>Для добавления кода заполните поле с ссылкой ниже</label>
-            <button type="button" id="add_qr" class="btn btn-primary">Добавить QR-code</button>
+            <div class="form-group col-5">
+                <label>Для добавления кода заполните поле с ссылкой ниже</label>
+            </div>
+            <div class="col-7">
+                <button type="button" id="add_qr" class="btn btn-primary">Добавить QR-code</button>
+            </div>
             <div id="qrcode" hidden>
 
             </div>
         </form>
-        <canvas id="editor" class="mt-3" style="max-width: 1000px; height: auto"></canvas>
+        <div style="display: flex; flex-direction: column">
+            <div class="row col">
+                <button type="button" class="btn btn-primary" id="color-picker">Выбор цвета фона</button>
+            </div>
+            <canvas id="editor" class="mt-3" style="max-width: 1000px; height: auto;"></canvas>
+        </div>
         <div style="max-width: 1000px">
             <div class="row pt-4">
                 <label for="description">Текст визитки</label>
@@ -81,8 +90,20 @@
 
 {% block scripts %}
     <script>
-        $(document).ready(() => {
+        let p = new Picker({
+            parent: document.querySelector('#color-picker'),
+            onOpen: function(color){console.log(color);},
+            alpha: false,
+        });
+
+        window.onload = () => {
             init();
+            $('#color-picker').on('click', () => {
+                document.querySelector('.picker_done').getElementsByTagName('button')[0].onclick = () => {
+                  background = p.color;
+                  draw();
+                };
+            });
             $('#upload_image_btn').on('click', () => {
                 let file = $('#upload_image').prop('files')[0];
                 let reader = new FileReader();
@@ -209,7 +230,7 @@
                     draw();
                 };
             });
-        });
+        };
 
     </script>
 {% endblock %}

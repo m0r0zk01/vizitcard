@@ -53,6 +53,10 @@
         }
 
         function register_listener() {
+            $("#registration_form").keyup(function(event) {
+                if (event.keyCode === 13)
+                    $("#register_button").click();
+            });
             $("#register_button").on("click", function () {
                 let formData = new FormData(document.getElementById('registration_form'));
                 $.ajax({
@@ -80,6 +84,10 @@
         }
 
         function login_listener() {
+            $("#login_form").keyup(function(event) {
+                if (event.keyCode === 13)
+                    $("#login_button").click();
+            });
             $("#login_button").on("click", function () {
                 let formData = new FormData(document.getElementById('login_form'));
                 $.ajax({

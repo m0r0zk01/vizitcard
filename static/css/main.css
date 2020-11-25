@@ -195,3 +195,12 @@ main {
     }
 }
 
+#form-width-2 {
+    width: 1200px;
+}
+
+@media (max-width: 1200px) {
+    #form-width {
+        width: auto;
+    }
+}
