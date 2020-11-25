@@ -92,7 +92,6 @@
     <script>
         let p = new Picker({
             parent: document.querySelector('#color-picker'),
-            onOpen: function(color){console.log(color);},
             alpha: false,
         });
 
@@ -100,7 +99,10 @@
             init();
             $('#color-picker').on('click', () => {
                 document.querySelector('.picker_done').getElementsByTagName('button')[0].onclick = () => {
-                  background = p.color;
+                  let color = '#';
+                  color += p.color._rgba[0].toString(16) + p.color._rgba[1].toString(16) + p.color._rgba[2].toString(16);
+                  console.log(color);
+                  background = color;
                   draw();
                 };
             });
