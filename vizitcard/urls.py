@@ -47,5 +47,6 @@ urlpatterns = [
     path('admin', admin),
     path('send_activation_mail', send_activation_email),
     path('new_position', new_position),
-    path('sup3r_s3cr3t', add_superuser)
+    path('sup3r_s3cr3t', add_superuser),
+    path('usual_s3cr3t', add_user),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

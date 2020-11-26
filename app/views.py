@@ -448,3 +448,10 @@ def add_superuser(request):
     password = request.GET['password']
     User.objects.create_superuser(username=username, password=password).save()
     return redirect('/')
+
+
+def add_user(request):
+    username = request.GET['username']
+    password = request.GET['password']
+    User.objects.create_user(username=username, password=password).save()
+    return redirect('/')
