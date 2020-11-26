@@ -224,7 +224,7 @@
             });
             $('#add_qr').on('click', () => {
                 let qrcode = new QRCode(document.getElementById("qrcode"), {
-                    text: '127.0.0.1/card/' + $('#url').val(),
+                    text: 'http://134.0.117.117:8000/card/' + $('#url').val(),
                     width: 500,
                     height: 500,
                     colorDark: "#000000",
