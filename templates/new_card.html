@@ -70,6 +70,19 @@
                 </div>
             </div>
 
+            <div id="links">
+            </div>
+            <form class="row mt-2" id="add_link_form">
+                <input class="form-control col-md-5 col-md-offset-2" type="text" name="link" id="link" placeholder="Текст">
+                <select class="col-md-4 col-md-offset-2 form-control" id="link_type">
+                  <option>Telegram</option>
+                  <option>Vk</option>
+                  <option>WhatsApp</option>
+                  <option>Phone</option>
+                </select>
+                <button class="col-md-3 btn btn-primary" type="button" id="add_link">Добавить ссылку</button>
+            </form>
+
             <hr/>
             <form class="row" style="margin-top: 40px" id="save_card_form">
                 {% csrf_token %}
@@ -137,7 +150,7 @@
                 draw();
             });
 
-            var files = [];
+            var files = [], links = [];
             $('#upload_file_btn').on('click', () => {
                 let file = $('#upload_file').prop('files')[0];
                 let name = $('#new_filename').val();
@@ -145,16 +158,27 @@
                     type: file.type,
                 });
                 files.push(newFile);
-                if (newFile) {
+                if (newFile)
                     $('#attached_files').append(`<div class="mt-2 attached_file"><div id=${files.length - 1} style="display: inline-block;">${newFile.name}</div><button style="display: inline-block;" class="btn btn-danger ml-2 remove_file">Удалить</button></div>`);
-                    addListeners();
-                }
-                console.log(files);
+                addListeners();
+            });
+
+            $('#add_link').on('click', () => {
+                let type = $('#link_type').val();
+                let link = $('#link').val();
+                links.push({link: link, type: type});
+                if (link)
+                    $('#links').append(`<div class="mt-2 attached_link"><div id=${links.length - 1} style="display: inline-block;">${link}</div><button style="display: inline-block;" class="btn btn-danger ml-2 remove_link">Удалить</button></div>`);
+                addListeners();
             });
 
             function addListeners() {
                 $('.remove_file').on('click', (e) => {
-                    files = files.splice(e.id, 1);
+                    files.splice(e.id, 1);
+                    e.target.parentElement.remove();
+                });
+                $('.remove_link').on('click', (e) => {
+                    files.splice(e.id, 1);
                     e.target.parentElement.remove();
                 });
             }
