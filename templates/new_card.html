@@ -44,7 +44,7 @@
             <div class="row col pb-2">
                 <button type="button" class="btn btn-primary" id="color-picker">Выбор цвета фона</button>
             </div>
-            <canvas id="editor"></canvas>
+            <canvas id="editor" style="max-width: 1000px; height: auto"></canvas>
         </div>
         <div style="max-width: 1000px">
             <div class="row pt-4">
@@ -213,7 +213,7 @@
                             processData: false,
                             contentType: false,
                             success: () => {
-                                window.location.reload(false);
+                                window.location = '/';
                             },
                             error: (data) => {
                                 console.log(data);

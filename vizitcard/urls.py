@@ -45,5 +45,6 @@ urlpatterns = [
     path('new_card', new_card),
     path('download/<str:path>', download),
     path('admin', admin),
-    path('send_activation_mail', send_activation_email)
+    path('send_activation_mail', send_activation_email),
+    path('new_position', new_position),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -5,8 +5,8 @@
     {% include 'patterns/sidebar.html' %}
 
     <div class="container d-flex mx-auto mt-2" style="flex-direction: column">
-        <div class="text lead">
-            <h2>Визитка {{ card.name }}. Создатель: <a href="../../profile/{{ card.creator.username }}">{{ card.creator.username }}</a></h2>
+        <div class="text lead pb-2">
+            <h2>{{ card.name }}. Создатель: <a href="../../profile/{{ card.creator.username }}">{{ card.creator.username }}</a></h2>
         </div>
         <img src="../media/{{ card.image }}" alt="card_image">
         <div class="text lead mt-3">Описание:</div>

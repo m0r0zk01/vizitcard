@@ -36,7 +36,7 @@ class Img extends object {
 
 
 let canvas, context,
-    canvasWidth = 800, canvasHeight = 800,
+    canvasWidth = 1000, canvasHeight = 1000,
     minWidth = 50, minHeight = 50,
     objects = [],
     dragOK = false,
@@ -44,22 +44,20 @@ let canvas, context,
     offsetX, offsetY,
     max_z = 0,
     selected = null,
-    background = "#444444";
+    background = '#444444';
 
 function init() {
     canvas = document.getElementById("editor");
     context = canvas.getContext("2d");
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
-    //canvas.style.background = "#444444";
+    canvas.style.background = "#444444";
 
-    document.onkeyup = (e) => {
-        console.log(e);
+    document.onkeydown = (e) => {
         if (selected == null)
             return;
-        if (objects[selected].isResizing && e.shiftKey && objects[selected].constructor.name === 'Img') {
-            console.log('here');
-            objects[selected].height = Math.floor(objects[selected].width * object[selected].originalPropotion);
+        if (e.keyCode === 16 && objects[selected].constructor.name === 'Img') {
+            objects[selected].height = Math.floor(objects[selected].width * objects[selected].originalPropotion);
             objects[selected].y2 = objects[selected].y1 + objects[selected].height;
         }
         if (e.keyCode === 46) {
@@ -81,23 +79,13 @@ function init() {
     draw();
 }
 
-function getMousePos(canvas, e) {
-    let rect = canvas.getBoundingClientRect();
-    return {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
-    };
-}
-
 function myMove(e) {
     if (dragOK) {
-        let pos = getMousePos(canvas, e);
-        let mx = pos.x;
-        let my = pos.y;
+        let mx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - offsetX;
+        let my = e.clientY + document.body.scrollTop + document.documentElement.scrollTop - offsetY;
 
         let dx = mx - startX;
         let dy = my - startY;
-
         if (selected != null && objects[selected].isDragging) {
             objects[selected].x1 += dx;
             objects[selected].y1 += dy;
@@ -150,16 +138,13 @@ function myUp(e) {
 }
 
 function myDown(e) {
-    let pos = getMousePos(canvas, e);
-    let mx = pos.x;
-    let my = pos.y;
-
-    console.log(mx, my, objects[0].x1, objects[0].y1);
+    let mx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - offsetX;
+    let my = e.clientY + document.body.scrollTop + document.documentElement.scrollTop - offsetY;
 
     dragOK = true;
     let clicked = null;
     for (let i = 0; i < objects.length; i++) {
-        if (mx >= objects[i].x1 && mx <= objects[i].x2 && my >= objects[i].y1 && my <= objects[i].y2) {
+        if (mx > objects[i].x1 && mx < objects[i].x2 && my > objects[i].y1 && my < objects[i].y2) {
             if (clicked == null || objects[i].z > objects[clicked].z)
                 clicked = i;
         } else if (i === selected) {
@@ -241,7 +226,8 @@ function draw() {
             drawImage(objects[i]);
             if (i === selected)
                 drawSquares(objects[i]);
-        } else {
+        }
+        else {
             drawText(objects[i]);
         }
     }

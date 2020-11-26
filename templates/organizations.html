@@ -182,6 +182,22 @@
             });
         });
 
+        $('.change_position').each(function (i, obj) {
+            obj.addEventListener('click', () => {
+                let formData = new FormData(obj.parentElement);
+                $.ajax({
+                    url: '/new_position',
+                    data: formData,
+                    type: 'POST',
+                    processData: false,
+                    contentType: false,
+                    success: function () {
+                        window.location.reload(false);
+                    }
+                });
+            });
+        });
+
         $('#leave_organization').on('click', () => {
             let formData = new FormData(document.getElementById('leave_organization_form'));
             $.ajax({

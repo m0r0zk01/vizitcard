@@ -177,7 +177,7 @@ def profile(request, **kwargs):
         profile_owner = User.objects.get(username=kwargs['username'])
     except:
         profile_owner = request.user
-    return render(request, 'profile.html', {'user': request.user, 'profile_owner': profile_owner})
+    return render(request, 'profile.html', {'user': request.user, 'profile_owner': profile_owner, 'cards': Card.objects.filter(creator=request.user) if not request.user.is_anonymous else []})
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -418,4 +418,26 @@ def send_activation_email(request):
     send_mail('vizitcard', '', None, [user.email], html_message=text)
     token.save()
 
+    return Response(b'', status=200)
+
+
+@login_required()
+@api_view(['POST'])
+def new_position(request):
+    id = request.POST.get('id', 'None')
+    pos = request.POST.get('pos', '')
+    if id is None:
+        return Response('ID не указан', status=400)
+    try:
+        change = User.objects.get(id=id)
+    except User.DoesNotExist:
+        change = None
+    if change is None:
+        return Response('Неверный ID', status=400)
+
+    user = User.objects.get(username=request.user)
+    if user == change.worker.org.creator:
+        change.worker.position = pos
+        change.worker.save()
+        change.save()
     return Response(b'', status=200)
