@@ -36,7 +36,7 @@ class Img extends object {
 
 
 let canvas, context,
-    canvasWidth = 1000, canvasHeight = 1000,
+    canvasWidth = 800, canvasHeight = 800,
     minWidth = 50, minHeight = 50,
     objects = [],
     dragOK = false,
@@ -52,6 +52,22 @@ function init() {
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
     //canvas.style.background = "#444444";
+
+    document.onkeyup = (e) => {
+        console.log(e);
+        if (selected == null)
+            return;
+        if (objects[selected].isResizing && e.shiftKey && objects[selected].constructor.name === 'Img') {
+            objects[selected].height = Math.floor(objects[selected].width * object[selected].originalPropotion);
+            objects[selected].y2 = objects[selected].y1 + objects[selected].height;
+        }
+        if (e.keyCode === 46) {
+            console.log(objects);
+            objects.splice(selected, 1);
+            console.log(objects);
+        }
+        draw();
+    };
 
     [...document.querySelectorAll('canvas')].forEach(canvas => {
         canvas.addEventListener('mousemove', function (e) {
@@ -213,8 +229,7 @@ function draw() {
             drawImage(objects[i]);
             if (i === selected)
                 drawSquares(objects[i]);
-        }
-        else {
+        } else {
             drawText(objects[i]);
         }
     }

@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from scripts.token_generator import generate_token
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
 from datetime import datetime
 import os
 
@@ -26,9 +28,31 @@ class Card(models.Model):
     image = models.FileField(upload_to='img/cards/cards/')
 
 
+def upload_path_handler(instance, filename):
+    return f'img/cards/{instance.card.id}/{filename}'
+
+
 class CardFile(models.Model):
+    name = models.CharField(max_length=100, default='filename')
     card = models.ForeignKey(Card, on_delete=models.CASCADE)
-    file = models.FileField(upload_to='img/cards/')
+    file = models.FileField(null=True, blank=True, upload_to=upload_path_handler)
+
+
+_UNSAVED_FILEFIELD = 'unsaved_filefield'
+
+
+@receiver(pre_save, sender=CardFile)
+def skip_saving_file(sender, instance, **kwargs):
+    if not instance.pk and not hasattr(instance, _UNSAVED_FILEFIELD):
+        setattr(instance, _UNSAVED_FILEFIELD, instance.file)
+        instance.file = None
+
+
+@receiver(post_save, sender=CardFile)
+def save_file(sender, instance, created, **kwargs):
+    if created and hasattr(instance, _UNSAVED_FILEFIELD):
+        instance.file = getattr(instance, _UNSAVED_FILEFIELD)
+        instance.save()
 
 
 class Organization(models.Model):

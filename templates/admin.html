@@ -12,21 +12,32 @@
         </div>
     {% else %}
         <div class="container mx-auto" style="overflow: auto; margin-left: 240px; width: calc(100% - 240px)">
+            <div class="row bg-danger mx-auto" style="max-width: 800px;">
+                <div class="col-3">
+                    Название
+                </div>
+                <div class="col-5">
+                    Описание
+                </div>
+                <div class="col-4">
+                    Действия
+                </div>
+            </div>
             {% for org in requests %}
                 <div class="row request_info mt-2">
-                    <div class="col-md-2">
+                    <div class="col-3 text">
                         {{ org.name }}
                     </div>
-                    <div class="col-md-6">
-                        {{ org.description }}
+                    <div class="col-5 text-justify">
+                        {{ org.description|linebreaks }}
                     </div>
-                    <form id="form{{ org.pk }}a" method="post">
+                    <form class="col-2" id="form{{ org.pk }}a" method="post">
                         {% csrf_token %}
                         <input type="text" name="id" value="{{ org.pk }}" hidden>
                         <input type="text" name="type" value="accept" hidden>
                         <button type="button" class="btn btn-success send_request" id="{{ org.pk }}a">Принять</button>
                     </form>
-                    <form id="form{{ org.pk }}d" method="post">
+                    <form class="col-2" id="form{{ org.pk }}d" method="post">
                         {% csrf_token %}
                         <input type="text" name="id" value="{{ org.pk }}" hidden>
                         <input type="text" name="type" value="decline" hidden>

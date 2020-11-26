@@ -10,7 +10,7 @@
         </div>
 
         <div style="max-width: 300px; padding-bottom: 40px; padding-top: 40px">
-            <input class="form-control" id="card_name" placeholder="Имя карточки" required>
+            <input class="form-control" id="card_name" placeholder="Имя карточки" required="required">
         </div>
 
         <form class="row">
@@ -75,7 +75,8 @@
                 {% csrf_token %}
                 <div class="form-group" style="max-width: 300px">
                     <div class="d-flex">
-                        <input type="text" name="url" class="form-control" id="url" placeholder="Ссылка на визитку">
+                        <input type="text" name="url" class="form-control" id="url" placeholder="Ссылка на визитку"
+                               required="required">
                         <button type="button" id="card_btn" class="btn btn-success my-auto ml-2"
                                 style="min-width: 200px">Создать визитку
                         </button>
@@ -99,11 +100,11 @@
             init();
             $('#color-picker').on('click', () => {
                 document.querySelector('.picker_done').getElementsByTagName('button')[0].onclick = () => {
-                  let color = '#';
-                  color += p.color._rgba[0].toString(16) + p.color._rgba[1].toString(16) + p.color._rgba[2].toString(16);
-                  console.log(color);
-                  background = color;
-                  draw();
+                    let color = '#';
+                    color += p.color._rgba[0].toString(16) + p.color._rgba[1].toString(16) + p.color._rgba[2].toString(16);
+                    console.log(color);
+                    background = color;
+                    draw();
                 };
             });
             $('#upload_image_btn').on('click', () => {
@@ -140,16 +141,15 @@
             $('#upload_file_btn').on('click', () => {
                 let file = $('#upload_file').prop('files')[0];
                 let name = $('#new_filename').val();
-                Object.defineProperty(file, 'name', {
-                    writable: true,
-                    value: name ? name : file.name,
+                let newFile = new File([file], name ? name : file.name, {
+                    type: file.type,
                 });
-                files.push(file);
-
-                if (file) {
-                    $('#attached_files').append(`<div class="mt-2 attached_file"><div id=${files.length - 1} style="display: inline-block;">${file.name}</div><button style="display: inline-block;" class="btn btn-danger ml-2 remove_file">Удалить</button></div>`);
+                files.push(newFile);
+                if (newFile) {
+                    $('#attached_files').append(`<div class="mt-2 attached_file"><div id=${files.length - 1} style="display: inline-block;">${newFile.name}</div><button style="display: inline-block;" class="btn btn-danger ml-2 remove_file">Удалить</button></div>`);
                     addListeners();
                 }
+                console.log(files);
             });
 
             function addListeners() {
@@ -193,6 +193,9 @@
                 });
                 formData.append('serializedCard', serialized);
 
+                selected = null;
+                draw();
+
                 fetch(document.getElementById('editor').toDataURL())
                     .then(res => res.blob())
                     .then(blob => {
@@ -213,7 +216,8 @@
                                 window.location.reload(false);
                             },
                             error: (data) => {
-                                $('#card_error').val(data['responseJSON']);
+                                console.log(data);
+                                $('#card_error').text(data['responseJSON']);
                             }
                         });
                     });

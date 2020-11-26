@@ -8,17 +8,17 @@
         <div class="text lead">
             <h2>Визитка {{ card.name }}. Создатель: <a href="../../profile/{{ card.creator.username }}">{{ card.creator.username }}</a></h2>
         </div>
-        <img src="../media/{{ card.image }}">
-        <div class="text lead">
-            <b>Описание:</b>
-            {{ card.description }}
+        <img src="../media/{{ card.image }}" alt="card_image">
+        <div class="text lead mt-3">Описание:</div>
+        <div class="pl-4 text-justify mt-1" style="outline: 1px solid #1A2226; background-color: #eccfb6">
+            {{ card.description|linebreaks }}
         </div>
 
-        <div class="text lead">
+        <div class="text lead mt-3">
             <p>Прикрепленные к визитке файлы:</p>
         </div>
         {% for file in files %}
-            <a href="/media/{{ file.file }}">{{ file.file }}</a>
+            <a href="/media/{{ file.file }}">{{ file.name }}</a>
         {% endfor %}
     </div>
 

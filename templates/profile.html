@@ -40,9 +40,18 @@
                 <div class="form-group">
                     <label for="biography">О себе</label>
                     <textarea name="biography" class="form-control" id="biography" rows="3" {% if profile_owner.biography %}
-                              value="{{ profile_owner.biography }}" {% endif %} placeholder="О себе" readonly></textarea>
+                              value="{{ profile_owner.biography|linebreaks }}" {% endif %} placeholder="О себе" readonly></textarea>
                 </div>
-                <div class="row">
+                {% if profile_owner.worker and profile_owner.worker.org %}
+                    <div class="text">
+                        Пользователь состоит в организаии <a href="/organization/{{ profile_owner.worker.org.id }}">{{ profile_owner.worker.org.name }}</a>
+                    </div>
+                {% else %}
+                    <div class="text">
+                        Пользователь не состоит в организации
+                    </div>
+                {% endif %}
+                <div class="row mt-3">
                     <div class="col">
                         <label for="first_name">Текущий пароль</label>
                         <input name="password" type="password" class="form-control" id="password"

@@ -210,7 +210,7 @@ def delete_user_from_organization(user_id, organization_id):
 def organizations(request):
     worker = User.objects.get(username=request.user.username).worker
     context = {'worker': worker}
-    if worker:
+    if worker and worker.org:
         context['workers'] = [User.objects.get(worker=i) for i in Worker.objects.filter(org=worker.org)]
         if worker.org:
             context['org'] = worker.org
@@ -340,6 +340,23 @@ def leave_organization(request):
     return Response(b'', status=200)
 
 
+@login_required()
+@api_view(['POST'])
+def new_code(request):
+    id = request.POST.get('id', None)
+    if id is None:
+        return Response('ID не указан', status=400)
+    org = Organization.objects.get(id=id)
+    OrganizationToken.objects.get(org=org).delete()
+    tokens = OrganizationToken.objects.all()
+    new_token = randint(100000, 999999)
+    while new_token in tokens:
+        new_token = randint(100000, 999999)
+    OrganizationToken(org=org, token=new_token, token_type='org', lifetime=1e9).save()
+    org.save()
+    return Response({'code': new_token}, status=200)
+
+
 def card(request, url):
     try:
         card_obj = Card.objects.get(url=url)
@@ -353,21 +370,24 @@ def card(request, url):
 @api_view(['POST'])
 def create_card(request):
     name = request.POST.get('card_name', None)
-    if name is None:
+    url = request.POST.get('url', None)
+    if name is None or not name:
         return Response('Имя карточки не указано', status=400)
+    if url is None or not (3 <= len(url) <= 30):
+        return Response('Ссылка не указана или ее длина не лежит в отрезке от 3 до 30', status=400)
+    if Card.objects.filter(url=url).count():
+        return Response('Ссылка уже занята', status=400)
+
     description = request.POST.get('card_description')
     serialized_array = request.POST.get('serializedCard', '[]')
     image = request.FILES['card']
-    url = request.POST.get('url', None)
-    if not url:
-        url = generate_token()[:5]
-        while Card.objects.filter(url=url).count():
-            url = generate_token()[:5]
-    elif Card.objects.filter(url=url).count():
-        return Response('Ссылка уже занята', status=400)
+
     new = Card(creator=request.user, name=name, description=description, url=url, serialized_array=serialized_array, image=File(image))
     new.save()
     for name, file in request.FILES.items():
+        if name == 'card':
+            continue
+        file.name = name
         CardFile(card=new, file=File(file)).save()
     return Response(status=200)
 

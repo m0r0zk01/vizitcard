@@ -39,6 +39,7 @@ urlpatterns = [
     path('delete_organization', delete_organization),
     path('delete_user_from_organization', delete_user_from_organization_view),
     path('leave_organization', leave_organization),
+    path('new_code', new_code),
     path('create_card', create_card),
     path('card/<str:url>', card),
     path('new_card', new_card),

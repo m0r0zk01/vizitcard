@@ -33,7 +33,13 @@
                     </div>
                 {% else %}
                     <div class="row py-4">
-                        <h6>Код входа в организацию: <b>{{ code.token }}</b></h6>
+                        <div class="col-4">
+                            <h6 id="enter_code">Код входа в организацию: <b>{{ code.token }}</b></h6>
+                        </div>
+                        <div class="col-8">
+                            <form id="csrf">{% csrf_token %}</form>
+                            <button type="button" class="btn btn-primary" id="new_code">Сгенерировать новый</button>
+                        </div>
                     </div>
                 {% endif %}
             {% else %}
@@ -179,15 +185,30 @@
         $('#leave_organization').on('click', () => {
             let formData = new FormData(document.getElementById('leave_organization_form'));
             $.ajax({
-                    url: '/leave_organization',
-                    data: formData,
-                    type: 'POST',
-                    processData: false,
-                    contentType: false,
-                    success: function () {
-                        window.location.reload(false);
-                    }
-                });
+                url: '/leave_organization',
+                data: formData,
+                type: 'POST',
+                processData: false,
+                contentType: false,
+                success: function () {
+                    window.location.reload(false);
+                }
+            });
+        });
+
+        $('#new_code').on('click', () => {
+            let formData = new FormData(document.getElementById('csrf'));
+            formData.set('id', {{ worker.org.id }});
+            $.ajax({
+                url: '/new_code',
+                data: formData,
+                type: 'post',
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    $('#enter_code').html('Код входа в организацию: <b>' + data['code'] + '</b>');
+                }
+            });
         });
     </script>
 {% endblock %}
