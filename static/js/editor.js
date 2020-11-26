@@ -58,13 +58,12 @@ function init() {
         if (selected == null)
             return;
         if (objects[selected].isResizing && e.shiftKey && objects[selected].constructor.name === 'Img') {
+            console.log('here');
             objects[selected].height = Math.floor(objects[selected].width * object[selected].originalPropotion);
             objects[selected].y2 = objects[selected].y1 + objects[selected].height;
         }
         if (e.keyCode === 46) {
-            console.log(objects);
             objects.splice(selected, 1);
-            console.log(objects);
         }
         draw();
     };
@@ -82,13 +81,23 @@ function init() {
     draw();
 }
 
+function getMousePos(canvas, e) {
+    let rect = canvas.getBoundingClientRect();
+    return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+    };
+}
+
 function myMove(e) {
     if (dragOK) {
-        let mx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - offsetX;
-        let my = e.clientY + document.body.scrollTop + document.documentElement.scrollTop - offsetY;
+        let pos = getMousePos(canvas, e);
+        let mx = pos.x;
+        let my = pos.y;
 
         let dx = mx - startX;
         let dy = my - startY;
+
         if (selected != null && objects[selected].isDragging) {
             objects[selected].x1 += dx;
             objects[selected].y1 += dy;
@@ -141,13 +150,16 @@ function myUp(e) {
 }
 
 function myDown(e) {
-    let mx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft - offsetX;
-    let my = e.clientY + document.body.scrollTop + document.documentElement.scrollTop - offsetY;
+    let pos = getMousePos(canvas, e);
+    let mx = pos.x;
+    let my = pos.y;
+
+    console.log(mx, my, objects[0].x1, objects[0].y1);
 
     dragOK = true;
     let clicked = null;
     for (let i = 0; i < objects.length; i++) {
-        if (mx > objects[i].x1 && mx < objects[i].x2 && my > objects[i].y1 && my < objects[i].y2) {
+        if (mx >= objects[i].x1 && mx <= objects[i].x2 && my >= objects[i].y1 && my <= objects[i].y2) {
             if (clicked == null || objects[i].z > objects[clicked].z)
                 clicked = i;
         } else if (i === selected) {

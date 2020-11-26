@@ -10,26 +10,14 @@
             <p>Нажмите <a href="new_card">сюда</a>, чтобы создать свою первую визитку</p>
         </div>
     {% else %}
-        <div class="text lead" style="text-align: center">
-            <p>Ваши визитки:</p>
-        </div>
-        <div class="container">
-            <div class="row request_info" style="background-color: #1A2226">
-                <div class="col-3">
-                    <p>Название</p>
-                </div>
-                <div class="col-9">
-                    <p>Ссылка</p>
-                </div>
+        <div class="container mx-auto" style="max-width: 800px">
+            <div class="row text lead">
+                <p>Ваши визитки:</p>
             </div>
-
             {% for card in cards %}
-                <div class="row request_info mt-2">
-                    <div class="col-3">
-                        {{ card.name }}
-                    </div>
-                    <div class="col-9">
-                        <a href="card/{{ card.url }}">Ссылка</a>
+                <div class="row mt-2">
+                    <div class="col-12">
+                        <a href="card/{{ card.url }}">{{ card.name }}</a>
                     </div>
                 </div>
             {% endfor %}

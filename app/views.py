@@ -388,7 +388,7 @@ def create_card(request):
         if name == 'card':
             continue
         file.name = name
-        CardFile(card=new, file=File(file)).save()
+        CardFile(card=new, file=File(file), name=name).save()
     return Response(status=200)
 
 
