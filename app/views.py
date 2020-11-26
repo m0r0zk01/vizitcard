@@ -48,7 +48,7 @@ def register(request):
     print('saved')
 
     token = Token.objects.create(user=user, token_type="activation")
-    text = f'Hey, this is vizitcard bot! Go to this <a href="http://127.0.0.1:8000/activate/{token.token}"> link </a> to activate your account'
+    text = f'Hey, this is vizitcard bot! Go to this <a href="http://134.0.117.117:8000/activate/{token.token}"> link </a> to activate your account'
     send_mail('vizitcard', '', None, [email], html_message=text)
     token.save()
 
@@ -414,7 +414,7 @@ def send_activation_email(request):
     if user.is_active:
         return Response('Пользователь уже активирован', status=400)
     token = Token.objects.create(user=user, token_type="activation")
-    text = f'Hey, this is vizitcard bot! Go to this <a href="http://127.0.0.1:8000/activate/{token.token}"> link </a> to activate your account'
+    text = f'Hey, this is vizitcard bot! Go to this <a href="http://134.0.117.117:8000/activate/{token.token}"> link </a> to activate your account'
     send_mail('vizitcard', '', None, [user.email], html_message=text)
     token.save()
 
